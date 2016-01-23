@@ -20,7 +20,7 @@
 GLuint depthwidth = 640;
 GLuint depthheight = 480;
 GLuint depthtexid = 0;
-GLushort *depthdata;
+GLfloat *depthdata;
 GLuint numdepthverts;
 GLuint depthvao;
 
@@ -35,7 +35,7 @@ void depth_render(camera_t *c){
 	GLfloat mvp[16];
 	Matrix4x4_ToArrayFloatGL(&c->mvp, mvp);
 	glUniformMatrix4fv(depthbackshader.unimat40, 1, GL_FALSE, mvp);
-	glUniform3f(depthbackshader.univec30, 1.0/depthwidth, 1.0/depthwidth, 1.0);
+	glUniform3f(depthbackshader.univec30, 10.0/depthwidth, 10.0/depthwidth, 1.0);
 	glUniform2i(depthbackshader.univec20, depthwidth, depthheight);
 	glDrawArrays(GL_POINTS, 0, numdepthverts);
 }
@@ -67,14 +67,22 @@ int createback(const int x, const int y, const float scalex, const float scaley)
 void depth_update(void){
 	if(!depthneedsupdate) return;
 	states_bindActiveTexture(0, GL_TEXTURE_2D, depthtexid);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16UI, depthwidth, depthheight, 0, GL_RED_INTEGER, GL_UNSIGNED_SHORT, depthdata);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, depthwidth, depthheight, 0, GL_RED, GL_FLOAT, depthdata);
 	depthneedsupdate = FALSE;
 }
 
 void depth_get_depth(void) {
 	if (depthneedsupdate) return;
-	if (freenect_sync_update_depth_buffer(depthdata, KINECT_INDEX) == 0)
+	//if (freenect_sync_update_depth_buffer(depthdata, KINECT_INDEX) == 0){
+		int i;
+		for(i = 0; i < 640 * 480; i++) {
+			depthdata[i] = (GLfloat)rand() /RAND_MAX;
+		}
+		printf("%f\n", depthdata[rand()%(640 * 480)]);
 		depthneedsupdate = TRUE;
+
+	//}
+
 }
 
 
@@ -84,7 +92,7 @@ void depth_init(void){
 	createback(640, 480, 1.0, 1.0);
 
 	depthneedsupdate = TRUE;
-	depthdata = malloc(depthwidth * depthheight * sizeof(GLushort));
+	depthdata = malloc(depthwidth * depthheight * sizeof(GLfloat));
 	glGenTextures(1, &depthtexid);
 	depth_update();
 }
