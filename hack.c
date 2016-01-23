@@ -6,9 +6,11 @@
 
 #include "globaldefs.h"
 
-int main(void){
+int main(const int argc, const char ** argv){
 	int width = 1280;
 	int height = 720;
+	if(argc > 1) width = atoi(argv[1]);
+	if(argc > 2) height = atoi(argv[2]);
 
 
 	GLFWwindow * window;
