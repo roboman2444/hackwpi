@@ -11,6 +11,9 @@
 
 #include "glhelp.h"
 
+#include "matrixlib.h"
+#include "camera.h"
+
 int main(const int argc, const char ** argv){
 	int width = 1280;
 	int height = 720;
@@ -84,8 +87,28 @@ int main(const int argc, const char ** argv){
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, ti.texture);
 
+	camera_t c = camera_create();
+
+	c.pos[2] = 3.0;
+	c.viewchanged = TRUE;
+
+	float rickanglex = 0.0;
+	float rickangley = 0.0;
+	float rickanglez = 0.0;
+
 	//render loop lol
 	while (!glfwWindowShouldClose(window)) {
+		rickanglex += 0.5;
+		rickangley += 0.314;
+		rickanglez += 0.123;
+		matrix4x4_t rickmat;
+		Matrix4x4_CreateFromQuakeEntity(&rickmat, 0.0, 0.0, 0.0, rickanglex, rickangley, rickanglez, 1.0);
+		camera_update(&c);
+		matrix4x4_t outmat;
+		Matrix4x4_Concat(&outmat, &c.mvp, &rickmat);
+		GLfloat mvp[16];
+		Matrix4x4_ToArrayFloatGL(&outmat, mvp);
+		glUniformMatrix4fv(fs.unimat40, 1, GL_FALSE, mvp);
 //		glClearColor(1.0, 1.0, 1.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT);
 	//render shit
