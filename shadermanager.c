@@ -1,2 +1,156 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <GL/glew.h>
+#include <GL/gl.h>
 #include "globaldefs.h"
 #include "shadermanager.h"
+
+
+int shader_printShaderLogStatus(const GLuint id){
+	int blen = 0;
+	glGetProgramiv(id, GL_INFO_LOG_LENGTH, &blen);
+	if(blen > 1){
+		GLchar *log = (GLchar *) malloc(blen);
+		glGetShaderInfoLog(id, blen, 0, log);
+		printf("shader log: %s\n", log);
+		free(log);
+		return blen;
+	}
+	return FALSE;
+}
+int shader_printProgramLogStatus(const GLuint id){
+	int blen = 0;
+	glGetProgramiv(id, GL_INFO_LOG_LENGTH, &blen);
+	if(blen > 1){
+		GLchar *log = (GLchar *) malloc(blen);
+		glGetProgramInfoLog(id, blen, 0, log);
+		printf("shader log: %s\n", log);
+		free(log);
+		return blen;
+	}
+	return FALSE;
+}
+
+
+shader_t shader_load(const char * filename){
+	shader_t s ={0};
+	size_t filenamesize = strlen(filename);
+	s.fragfile = malloc(filenamesize + 6);
+	s.vertfile = malloc(filenamesize + 6);
+	s.geomfile = malloc(filenamesize + 6);
+
+	sprintf((char *)s.fragfile, "%s.frag", filename);
+	sprintf((char *)s.vertfile, "%s.vert", filename);
+	sprintf((char *)s.geomfile, "%s.geom", filename);
+
+
+	FILE *ff = fopen(s.fragfile, "r");
+	FILE *fv = fopen(s.vertfile, "r");
+	FILE *fg = fopen(s.geomfile, "r");
+	if(!ff || !fv){
+		if(ff) fclose(ff);
+		if(fv) fclose(fv);
+		if(fg) fclose(fg);
+		printf("shader not avaliable %s\n", filename);
+		return s;
+	}
+	fseek(ff, 0, SEEK_END);
+	int ffl = ftell(ff);
+	rewind(ff);
+	fseek(fv, 0, SEEK_END);
+	int fvl = ftell(fv);
+	rewind(fv);
+	if(!ff || !fv){
+		if(ff) fclose(ff);
+		if(fv) fclose(fv);
+		if(fg) fclose(fg);
+		printf("shader no length %s\n", filename);
+		return s;
+	}
+	int fgl = 0;
+	if(fg){
+		fseek(fg, 0, SEEK_END);
+		fgl = ftell(fg);
+		rewind(fg);
+	}
+
+
+	char *fs = malloc(ffl +1);
+	fread(fs, 1, ffl, ff);
+	fs[ffl] = 0;
+	char *vs = malloc(fvl +1);
+	fread(vs, 1, fvl, fv);
+	vs[fvl] = 0;
+
+	char *gs = 0;
+	if(fgl){
+		fg = malloc(fgl +1);
+		fread(gs, 1, fgl, fg);
+		gs[fgl] = 0;
+	}
+
+	printf("shader lengths %i %i %i\n", ffl, fvl, fgl);
+	GLuint vid = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vid, 1, (const GLchar **)&vs, &fvl);
+	glCompileShader(vid);
+	GLuint fid = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fid, 1, (const GLchar **) &fs, &ffl);
+	glCompileShader(fid);
+
+	GLuint gid = 0;
+	if(gs){
+		gid = glCreateShader(GL_GEOMETRY_SHADER);
+		glShaderSource(gid, 1, (const GLchar **) &gs, &fgl);
+		glCompileShader(gid);
+	}
+	printf("shader ids %i %i %i\n", fid, vid, gid);
+	shader_printProgramLogStatus(fid);
+	shader_printProgramLogStatus(vid);
+	shader_printProgramLogStatus(gid);
+
+
+	s.programid = glCreateProgram();
+	glAttachShader(s.programid, vid);
+	glAttachShader(s.programid, fid);
+	if(gid) glAttachShader(s.programid, gid);
+
+	glBindFragDataLocation(s.programid, 0, "fragColor"); //todo add more later
+
+	glBindAttribLocation(s.programid, POSATTRIBLOC, "posattrib"); //todo add more later
+	glLinkProgram(s.programid);
+	glDeleteShader(vid);
+	glDeleteShader(fid);
+	if(gid)glDeleteShader(gid);
+	int status = 0, fail=0;
+	glGetProgramiv(s.programid, GL_LINK_STATUS, &status);
+	if(status == GL_FALSE) fail = TRUE;
+	if(shader_printProgramLogStatus(s.programid) || fail){
+		fail = TRUE;
+	}
+	if(fail){
+		s.programid = 0;
+		return s;
+	}
+	glUseProgram(s.programid);
+	char texstring[10];
+	int i;
+	for(i =0; i < 16; i++){
+		sprintf(texstring, "texture%i", i);
+		s.texturepos[i] = glGetUniformLocation(s.programid, texstring);
+		glUniform1i(s.texturepos[i], i);
+	}
+
+	s.unimat40 = glGetUniformLocation(s.programid, "unimat40");
+	s.unimat41 = glGetUniformLocation(s.programid, "unimat41");
+	s.univec40 = glGetUniformLocation(s.programid, "univec40");
+	s.univec41 = glGetUniformLocation(s.programid, "univec41");
+	s.univec30 = glGetUniformLocation(s.programid, "univec30");
+	s.univec31 = glGetUniformLocation(s.programid, "univec31");
+	s.univec20 = glGetUniformLocation(s.programid, "univec20");
+	s.univec21 = glGetUniformLocation(s.programid, "univec21");
+
+	return s;
+
+}
