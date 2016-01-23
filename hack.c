@@ -4,6 +4,8 @@
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 
+#include <math.h>
+
 #include "globaldefs.h"
 
 #include "shadermanager.h"
@@ -13,6 +15,7 @@
 
 #include "matrixlib.h"
 #include "camera.h"
+
 
 int main(const int argc, const char ** argv){
 	int width = 1280;
@@ -48,6 +51,10 @@ int main(const int argc, const char ** argv){
 //	glCullFace(GL_BACK);
 	//now init other shit
 	CHECKGLERROR;
+
+	GLint maxbufattach = 0;
+	glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxbufattach);
+	printf("max attachments are %i\n", maxbufattach);
 
 	shader_t fs = shader_load("./texturedmesh");
 	GLfloat quad[] = {-1.0, -1.0, 0.0, 0.0, 0.0,
@@ -103,6 +110,8 @@ int main(const int argc, const char ** argv){
 		rickanglez += 0.123;
 		matrix4x4_t rickmat;
 		Matrix4x4_CreateFromQuakeEntity(&rickmat, 0.0, 0.0, 0.0, rickanglex, rickangley, rickanglez, 1.0);
+
+		c.pos[2] = sin(rickanglex * 1.3) + 3.0;
 		camera_update(&c);
 		matrix4x4_t outmat;
 		Matrix4x4_Concat(&outmat, &c.mvp, &rickmat);
