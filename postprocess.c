@@ -107,6 +107,7 @@ void runpost(void){
 	glBindFramebuffer(GL_FRAMEBUFFER, fourths.framebuffer_id);
 	glViewport(0,0, fourths.width, fourths.height);
 //	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//	glDrawBuffers(3, buffers);
 	glDrawBuffers(1, buffers);
 //	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glUseProgram(fsblurv.programid);
@@ -115,34 +116,41 @@ void runpost(void){
 
 
 	glDrawBuffers(1, buffers+1);
+//	glDrawBuffers(3, buffers);
 	glUseProgram(fsblurh.programid);
 	states_bindActiveTexture(0, GL_TEXTURE_2D, fourths.texture_id[0]);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, fulls.framebuffer_id);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//	glBindFramebuffer(GL_FRAMEBUFFER, fulls.framebuffer_id);
 	glViewport(0,0, fulls.width, fulls.height);
-	glDrawBuffers(1, buffers+1);
+//	glDrawBuffers(1, buffers+1);
+	glDrawBuffers(1, buffers);
+//	glDrawBuffers(3, buffers);
 	glUseProgram(bloomout.programid);
 	states_bindActiveTexture(0, GL_TEXTURE_2D, fulls.texture_id[0]);
 	states_bindActiveTexture(1, GL_TEXTURE_2D, fourths.texture_id[1]);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
+/*
 
 	glBindFramebuffer(GL_FRAMEBUFFER, eights.framebuffer_id);
 	glViewport(0,0, eights.width, eights.height);
-	glDrawBuffers(1, buffers+2);
+	glDrawBuffers(3, buffers);
+//	glDrawBuffers(1, buffers+2);
 	glUseProgram(lensflare.programid);
 	states_bindActiveTexture(0, GL_TEXTURE_2D, fulls.texture_id[1]);
 	states_bindActiveTexture(1, GL_TEXTURE_2D, lenscolor.texture);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
-	glDrawBuffers(1, buffers);
+	glDrawBuffers(3, buffers);
+//	glDrawBuffers(1, buffers);
 	glUseProgram(fsblurv.programid);
 	states_bindActiveTexture(0, GL_TEXTURE_2D, eights.texture_id[2]);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-	glDrawBuffers(1, buffers+1);
+//	glDrawBuffers(1, buffers+1);
+	glDrawBuffers(3, buffers);
 	glUseProgram(fsblurh.programid);
 	states_bindActiveTexture(0, GL_TEXTURE_2D, eights.texture_id[0]);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -151,14 +159,15 @@ void runpost(void){
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0,0, fulls.width, fulls.height);
-	glDrawBuffers(1, buffers);
+//	glDrawBuffers(1, buffers);
+	glDrawBuffers(3, buffers);
 	glUseProgram(lensout.programid);
 	states_bindActiveTexture(0, GL_TEXTURE_2D, fulls.texture_id[1]);
 	states_bindActiveTexture(1, GL_TEXTURE_2D, eights.texture_id[1]);
 	states_bindActiveTexture(2, GL_TEXTURE_2D, lensdirt.texture);
 	states_bindActiveTexture(3, GL_TEXTURE_2D, lensstar.texture);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
+*/
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_FALSE);

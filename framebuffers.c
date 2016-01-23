@@ -13,8 +13,10 @@ framebuffer_t create_framebuffer(int width, int height, GLenum texturesint[8],  
 	glBindFramebuffer(GL_FRAMEBUFFER, buffer.framebuffer_id);
 
 	int i;
+	int count = 0;
 	for(i = 0; i <8; i++){
 		if(!texturesint[i]) continue;
+		count++;
 		glGenTextures(1, &buffer.texture_id[i]);
 		states_bindActiveTexture(0, GL_TEXTURE_2D, buffer.texture_id[i]);
 		glTexImage2D(
@@ -30,6 +32,8 @@ framebuffer_t create_framebuffer(int width, int height, GLenum texturesint[8],  
 		);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glFramebufferTexture2D(
 			GL_FRAMEBUFFER,
 			GL_COLOR_ATTACHMENT0 + i,
@@ -51,6 +55,7 @@ framebuffer_t create_framebuffer(int width, int height, GLenum texturesint[8],  
 	}
 	buffer.width = width;
 	buffer.height = height;
+	printf("added %i textures\n", count);
 	return buffer;
 }
 

@@ -26,7 +26,7 @@ vec3 textureDistorted(
       );
    }
 void main(){
-/*	vec2 ftc = -fragtexcoord + vec2(1.0);
+	vec2 ftc = -fragtexcoord + vec2(1.0);
 	frag2 = vec4(0.0, 0.0, 0.0, 1.0);
 	vec2 ghostVec = (vec2(0.5) - fragtexcoord) * uGhostDispersal;
 	vec2 texelSize = 1.0 / vec2(textureSize(texture0, 0));
@@ -46,7 +46,7 @@ void main(){
 	weight = pow(1.0 - weight, 5.0);
 	frag2.rgb += max(textureDistorted(texture0, fragtexcoord + haloVec, direction, distortion).rgb +uBias, vec3(0.0)) * weight * 30.0;
 	frag2.rgb *= texture(texture1, vec2(length(vec2(0.5) - fragtexcoord) / length(vec2(0.5)), 0.0)).rgb;
-*/
+
 //	frag2.rgb = vec3(0.5);
-	fragColor.rgba = vec4(1.0);
+//	fragColor.rgba = vec4(1.0);
 }
