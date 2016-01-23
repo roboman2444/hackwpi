@@ -51,7 +51,7 @@ void loadshaders(void){
 void loadtextures(void){
 	tex_load("lenscolor.png", &lenscolor);
 	tex_load("lensdirt.png", &lensdirt);
-	tex_load("lensstart.png", &lensstar);
+	tex_load("lensstar.png", &lensstar);
 }
 
 void createFSquad(void){
@@ -176,7 +176,7 @@ void genframes(int width, int height){
 	CHECKGLERROR;
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, bloomv.texture_id, 0);
 	CHECKGLERROR;
-	printf("framebuffer  bloomv %i has texture %i\n", bloomv.framebuffer_id, bloomv.texture_id);
+	printf("framebuffer  bloomv %i has texture %i width %i, height %i\n", bloomv.framebuffer_id, bloomv.texture_id, bloomv.width, bloomv.height);
 
 
 	glGenFramebuffers(1, &bloomh.framebuffer_id);
@@ -199,6 +199,25 @@ void genframes(int width, int height){
 	glDrawBuffers(1, buffers);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, bloomh.texture_id, 0);
 	printf("framebuffer  bloomh %i has texture %i\n", bloomh.framebuffer_id, bloomh.texture_id);
+
+	glGenFramebuffers(1, &bloomout.framebuffer_id);
+	bloomout.width = width;
+	bloomout.height = height;
+	glBindFramebuffer(GL_FRAMEBUFFER, bloomout.framebuffer_id);
+//	glGenRenderbuffers(1, &bloomout.renderbuffer_id);
+//	glBindRenderbuffer(GL_RENDERBUFFER, bloomout.renderbuffer_id);
+//	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, bloomout.width, bloomout.height);
+//	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, bloomout.renderbuffer_id);
+	glGenTextures(1, &bloomout.texture_id);
+	glBindTexture(GL_TEXTURE_2D, bloomout.texture_id);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, bloomout.width, bloomout.height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glDrawBuffers(1, buffers);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, bloomout.texture_id, 0);
+	printf("framebuffer  bloomout %i has texture %i\n", bloomout.framebuffer_id, bloomout.texture_id);
 
 
 
@@ -252,21 +271,22 @@ void post_init(int width, int height){
 }
 void bind_fs(void){
 	glBindFramebuffer(GL_FRAMEBUFFER, fpscreen.framebuffer_id);
+	glViewport(0,0, fpscreen.width, fpscreen.height);
 }
 
 void runpost(void){
 	glDisable(GL_DEPTH_TEST);
 	glBindVertexArray(fsquad);
 	glBindFramebuffer(GL_FRAMEBUFFER, bloomv.framebuffer_id);
-//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0,0, bloomv.width, bloomv.height);
 //	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, fpscreen.texture_id);
 	glUseProgram(fsblurv.programid);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-//	glBindFramebuffer(GL_FRAMEBUFFER, bloomh.framebuffer_id);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, bloomh.framebuffer_id);
+	glViewport(0,0, bloomh.width, bloomh.height);
 //	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, bloomv.texture_id);
@@ -274,7 +294,7 @@ void runpost(void){
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, bloomout.framebuffer_id);
-//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0,0, bloomout.width, bloomout.height);
 //	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, bloomh.texture_id);
@@ -282,21 +302,25 @@ void runpost(void){
 	glBindTexture(GL_TEXTURE_2D, fpscreen.texture_id);
 	glUseProgram(bloomoutshader.programid);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-/*
+
 
 	glBindFramebuffer(GL_FRAMEBUFFER, lensout.framebuffer_id);
-	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, lenscolor.texture);
+//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0,0, lensout.width, lensout.height);
+//	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, bloomout.texture_id);
-//	glActiveTexture(GL_TEXTURE2);
-//	glBindTexture(GL_TEXTURE_2D, fpscreen.texture_id);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, lenscolor.texture);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, fpscreen.texture_id);
 	glUseProgram(lensflare.programid);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, lensoutblurv.framebuffer_id);
-	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
+	glViewport(0,0, lensoutblurv.width, lensoutblurv.height);
+//	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, lensout.texture_id);
 	glUseProgram(fsblurv.programid);
@@ -304,7 +328,8 @@ void runpost(void){
 
 
 	glBindFramebuffer(GL_FRAMEBUFFER, lensoutblurh.framebuffer_id);
-	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
+	glViewport(0,0, lensoutblurh.width, lensoutblurh.height);
+//	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, lensoutblurv.texture_id);
 	glUseProgram(fsblurh.programid);
@@ -313,7 +338,8 @@ void runpost(void){
 
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
+	glViewport(0,0, fpscreen.width, fpscreen.height);
+//	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, lensdirt.texture);
 	glActiveTexture(GL_TEXTURE3);
@@ -322,10 +348,8 @@ void runpost(void){
 	glBindTexture(GL_TEXTURE_2D, lensoutblurh.texture_id);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, bloomout.texture_id);
-
 	glUseProgram(lenscombine.programid);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-*/
 
 	glEnable(GL_DEPTH_TEST);
 

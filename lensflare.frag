@@ -45,4 +45,5 @@ void main(){
 	weight = pow(1.0 - weight, 5.0);
 	fragColor.rgb += max(textureDistorted(texture0, fragtexcoord + haloVec, direction, distortion).rgb +uBias, vec3(0.0)) * weight * 30.0;
 	fragColor.rgb *= texture(texture1, vec2(length(vec2(0.5) - fragtexcoord) / length(vec2(0.5)), 0.0)).rgb;
+//	fragColor.rgb = vec3(0.5);
 }
