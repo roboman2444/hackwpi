@@ -16,6 +16,8 @@
 #include "matrixlib.h"
 #include "camera.h"
 
+#include "depthback.h"
+
 
 int main(const int argc, const char ** argv){
 	int width = 1280;
@@ -69,6 +71,7 @@ int main(const int argc, const char ** argv){
 	GLuint ibid;
 
 	printf("bhaca\n");
+	depth_init();
 	glGenVertexArrays(1, &vaoid);
 	printf("bhaca\n");
 	glBindVertexArray(vaoid);
@@ -102,6 +105,7 @@ int main(const int argc, const char ** argv){
 	float rickanglex = 0.0;
 	float rickangley = 0.0;
 	float rickanglez = 0.0;
+
 
 	//render loop lol
 	while (!glfwWindowShouldClose(window)) {
