@@ -2,15 +2,17 @@
 #define HACKWPI_FRAMEBUFFERS_H
 
 
-typedef struct {
+typedef struct framebuffer_s {
 	GLuint framebuffer_id;
-	GLuint texture_id;
+	GLuint texture_id[8];
+	GLenum texture_comp[8];
+	GLenum texture_type[8];
 	GLuint renderbuffer_id;
 	GLuint width;
 	GLuint height;
-} Framebuffer;
+} framebuffer_t;
 
-Framebuffer create_framebuffer(int width, int height, GLenum type);
-void delete_framebuffer(Framebuffer framebuffer);
+framebuffer_t create_framebuffer(int width, int height, GLenum texturesint[8], GLenum texturesfmt[8], GLenum texturestype[8], int render);
+void delete_framebuffer(framebuffer_t fb);
 
 #endif

@@ -17,34 +17,27 @@
 
 
 
-shader_t fsquadshader;
-shader_t bloomoutshader;
-shader_t dofshader;
+shader_t bloomout;
+shader_t dof;
 shader_t fsblurh;
 shader_t fsblurv;
 shader_t lensflare;
-shader_t lenscombine;
+shader_t lensout;
+
+framebuffer_t fulls;
+framebuffer_t fourths;
+framebuffer_t eights;
 GLuint fsquad;
-Framebuffer bloomv;
-Framebuffer bloomh;
-Framebuffer bloomout;
-Framebuffer fpscreen;
-Framebuffer lensout;
-Framebuffer lensoutblurv;
-Framebuffer lensoutblurh;
 struct texinfo lenscolor;
 struct texinfo lensdirt;
 struct texinfo lensstar;
 
 void loadshaders(void){
-	bloomoutshader = shader_load("bloomout");
-//	lensoutshader = shader_load("lensout");
+	bloomout = shader_load("bloomout");
+	lensout = shader_load("lensout");
 	fsblurv = shader_load("fsblurv");
 	fsblurh = shader_load("fsblurh");
-//	lensoutblurv = shader_load("lensoutblurv");
-//	lensoutblurh = shader_load("lensoutblurh");
 	lensflare = shader_load("lensflare");
-	fsblurv = shader_load("fsblurv");
 
 
 
@@ -75,192 +68,25 @@ void createFSquad(void){
 }
 
 
-GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+GLenum fullsint[] = {GL_RGBA16F, GL_RGB16F, 0, 0, 0, 0, 0, 0};
+GLenum fullsfmt[] = {GL_RGBA, GL_RGB, 0, 0, 0, 0, 0, 0};
+GLenum fullstype[] = {GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE, 0, 0, 0, 0, 0, 0};
+
+GLenum fourthsint[] = {GL_RGB16F, GL_RGB16F, GL_RGB16F, 0, 0, 0, 0, 0};
+GLenum fourthsfmt[] = {GL_RGB, GL_RGB, GL_RGB, 0, 0, 0, 0, 0};
+GLenum fourthstype[] = {GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE, 0, 0, 0, 0, 0};
+
+GLenum eisint[] = {GL_RGB16F, GL_RGB16F, 0, 0, 0, 0, 0, 0};
+GLenum eisfmt[] = {GL_RGB, GL_RGB, 0, 0, 0, 0, 0, 0};
+GLenum eistype[] = {GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE, 0, 0, 0, 0, 0, 0};
+
 void genframes(int width, int height){
-	CHECKGLERROR;
-	glGenFramebuffers(1, &fpscreen.framebuffer_id);
-	fpscreen.width = width;
-	fpscreen.height = height;
-	glBindFramebuffer(GL_FRAMEBUFFER, fpscreen.framebuffer_id);
-	CHECKGLERROR;
-	glGenRenderbuffers(1, &fpscreen.renderbuffer_id);
-	CHECKGLERROR;
-	glBindRenderbuffer(GL_RENDERBUFFER, fpscreen.renderbuffer_id);
-	CHECKGLERROR;
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, fpscreen.width, fpscreen.height);
-	CHECKGLERROR;
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, fpscreen.renderbuffer_id);
-	CHECKGLERROR;
-	glGenTextures(1, &fpscreen.texture_id);
-	states_bindActiveTexture(0, GL_TEXTURE_2D, fpscreen.texture_id);
-	CHECKGLERROR;
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	CHECKGLERROR;
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	CHECKGLERROR;
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	CHECKGLERROR;
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	CHECKGLERROR;
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, fpscreen.width, fpscreen.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	CHECKGLERROR;
-	glDrawBuffers(1, buffers);
-	CHECKGLERROR;
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fpscreen.texture_id, 0);
-	CHECKGLERROR;
-
-	glGenFramebuffers(1, &lensout.framebuffer_id);
-	lensout.width = width/8;
-	lensout.height = height/8;
-	glBindFramebuffer(GL_FRAMEBUFFER, lensout.framebuffer_id);
-//	glGenRenderbuffers(1, &lensout.renderbuffer_id);
-//	glBindRenderbuffer(GL_RENDERBUFFER, lensout.renderbuffer_id);
-//	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, lensout.width, lensout.height);
-//	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, lensout.renderbuffer_id);
-	glGenTextures(1, &lensout.texture_id);
-	states_bindActiveTexture(0, GL_TEXTURE_2D, lensout.texture_id);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, lensout.width, lensout.height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glDrawBuffers(1, buffers);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, lensout.texture_id, 0);
-
-
-	glGenFramebuffers(1, &bloomout.framebuffer_id);
-	bloomout.width = width;
-	bloomout.height = height;
-//	glBindFramebuffer(GL_FRAMEBUFFER, bloomout.framebuffer_id);
-//	glGenRenderbuffers(1, &bloomout.renderbuffer_id);
-//	glBindRenderbuffer(GL_RENDERBUFFER, bloomout.renderbuffer_id);
-//	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, bloomout.width, bloomout.height);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, bloomout.renderbuffer_id);
-	glGenTextures(1, &bloomout.texture_id);
-	states_bindActiveTexture(0, GL_TEXTURE_2D, bloomout.texture_id);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, bloomout.width, bloomout.height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glDrawBuffers(1, buffers);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, bloomout.texture_id, 0);
-
-	glGenFramebuffers(1, &bloomv.framebuffer_id);
-	bloomv.width = width/4;
-	bloomv.height = height/4;
-//	bloomv.width = width;
-//	bloomv.height = height;
-	glBindFramebuffer(GL_FRAMEBUFFER, bloomv.framebuffer_id);
-	CHECKGLERROR;
-//	glGenRenderbuffers(1, &bloomv.renderbuffer_id);
-//	glBindRenderbuffer(GL_RENDERBUFFER, bloomv.renderbuffer_id);
-//	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, bloomv.width, bloomv.height);
-//	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, bloomv.renderbuffer_id);
-	glGenTextures(1, &bloomv.texture_id);
-	CHECKGLERROR;
-	states_bindActiveTexture(0, GL_TEXTURE_2D, bloomv.texture_id);
-	CHECKGLERROR;
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	CHECKGLERROR;
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	CHECKGLERROR;
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	CHECKGLERROR;
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	CHECKGLERROR;
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, bloomv.width, bloomv.height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	CHECKGLERROR;
-	glDrawBuffers(1, buffers);
-	CHECKGLERROR;
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, bloomv.texture_id, 0);
-	CHECKGLERROR;
-	printf("framebuffer  bloomv %i has texture %i width %i, height %i\n", bloomv.framebuffer_id, bloomv.texture_id, bloomv.width, bloomv.height);
-
-
-	glGenFramebuffers(1, &bloomh.framebuffer_id);
-	bloomh.width = width/4;
-	bloomh.height = height/4;
-//	bloomh.width = width;
-//	bloomh.height = height;
-	glBindFramebuffer(GL_FRAMEBUFFER, bloomh.framebuffer_id);
-//	glGenRenderbuffers(1, &bloomh.renderbuffer_id);
-//	glBindRenderbuffer(GL_RENDERBUFFER, bloomh.renderbuffer_id);
-//	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, bloomh.width, bloomh.height);
-//	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, bloomh.renderbuffer_id);
-	glGenTextures(1, &bloomh.texture_id);
-	states_bindActiveTexture(0, GL_TEXTURE_2D, bloomh.texture_id);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, bloomh.width, bloomh.height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glDrawBuffers(1, buffers);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, bloomh.texture_id, 0);
-	printf("framebuffer  bloomh %i has texture %i\n", bloomh.framebuffer_id, bloomh.texture_id);
-
-	glGenFramebuffers(1, &bloomout.framebuffer_id);
-	bloomout.width = width;
-	bloomout.height = height;
-	glBindFramebuffer(GL_FRAMEBUFFER, bloomout.framebuffer_id);
-//	glGenRenderbuffers(1, &bloomout.renderbuffer_id);
-//	glBindRenderbuffer(GL_RENDERBUFFER, bloomout.renderbuffer_id);
-//	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, bloomout.width, bloomout.height);
-//	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, bloomout.renderbuffer_id);
-	glGenTextures(1, &bloomout.texture_id);
-	states_bindActiveTexture(0, GL_TEXTURE_2D, bloomout.texture_id);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, bloomout.width, bloomout.height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glDrawBuffers(1, buffers);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, bloomout.texture_id, 0);
-	printf("framebuffer  bloomout %i has texture %i\n", bloomout.framebuffer_id, bloomout.texture_id);
-
-
-
-	glGenFramebuffers(1, &lensoutblurh.framebuffer_id);
-	lensoutblurh.width = width/8;
-	lensoutblurh.height = height/8;
-	glBindFramebuffer(GL_FRAMEBUFFER, lensoutblurh.framebuffer_id);
-//	glGenRenderbuffers(1, &lensoutblurh.renderbuffer_id);
-//	glBindRenderbuffer(GL_RENDERBUFFER, lensoutblurh.renderbuffer_id);
-//	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, lensoutblurh.width, lensoutblurh.height);
-//	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, lensoutblurh.renderbuffer_id);
-	glGenTextures(1, &lensoutblurh.texture_id);
-	states_bindActiveTexture(0, GL_TEXTURE_2D, lensoutblurh.texture_id);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, lensoutblurh.width, lensoutblurh.height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glDrawBuffers(1, buffers);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, lensoutblurh.texture_id, 0);
-
-
-	glGenFramebuffers(1, &lensoutblurv.framebuffer_id);
-	lensoutblurv.width = width/8;
-	lensoutblurv.height = height/8;
-	glBindFramebuffer(GL_FRAMEBUFFER, lensoutblurv.framebuffer_id);
-//	glGenRenderbuffers(1, &lensoutblurv.renderbuffer_id);
-//	glBindRenderbuffer(GL_RENDERBUFFER, lensoutblurv.renderbuffer_id);
-//	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, lensoutblurv.width, lensoutblurv.height);
-//	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, lensoutblurv.renderbuffer_id);
-	glGenTextures(1, &lensoutblurv.texture_id);
-	states_bindActiveTexture(0, GL_TEXTURE_2D, lensoutblurv.texture_id);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, lensoutblurv.width, lensoutblurv.height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glDrawBuffers(1, buffers);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, lensoutblurv.texture_id, 0);
-
-
+	fulls = create_framebuffer(width, height, fullsint, fullsfmt, fullstype, 1);
+	fourths = create_framebuffer(width/4, height/4, fourthsint, fourthsfmt, fourthstype, 0);
+	eights = create_framebuffer(width/8, height/8, eisint, eisfmt, eistype, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
-
 
 void post_init(int width, int height){
 	createFSquad();
@@ -269,75 +95,71 @@ void post_init(int width, int height){
 	loadtextures();
 }
 void bind_fs(void){
-	glBindFramebuffer(GL_FRAMEBUFFER, fpscreen.framebuffer_id);
-	glViewport(0,0, fpscreen.width, fpscreen.height);
+	glBindFramebuffer(GL_FRAMEBUFFER, fulls.framebuffer_id);
+	glViewport(0,0, fulls.width, fulls.height);
+	glDrawBuffers(1, buffers);
 }
 
 void runpost(void){
-	glDisable(GL_DEPTH_TEST);
 	glBindVertexArray(fsquad);
-	glBindFramebuffer(GL_FRAMEBUFFER, bloomv.framebuffer_id);
-	glViewport(0,0, bloomv.width, bloomv.height);
-//	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
-	states_bindActiveTexture(0, GL_TEXTURE_2D, fpscreen.texture_id);
-	glUseProgram(fsblurv.programid);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, bloomh.framebuffer_id);
-	glViewport(0,0, bloomh.width, bloomh.height);
-//	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
-	states_bindActiveTexture(0, GL_TEXTURE_2D, bloomv.texture_id);
-	glUseProgram(fsblurh.programid);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//	glBindFramebuffer(GL_FRAMEBUFFER, bloomout.framebuffer_id);
-	glViewport(0,0, bloomout.width, bloomout.height);
-//	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
-	states_bindActiveTexture(1, GL_TEXTURE_2D, bloomh.texture_id);
-	states_bindActiveTexture(0, GL_TEXTURE_2D, fpscreen.texture_id);
-	glUseProgram(bloomoutshader.programid);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-/*
-
-	glBindFramebuffer(GL_FRAMEBUFFER, lensout.framebuffer_id);
+	glDisable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+	glBindFramebuffer(GL_FRAMEBUFFER, fourths.framebuffer_id);
+	glViewport(0,0, fourths.width, fourths.height);
 //	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(0,0, lensout.width, lensout.height);
-//	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
-	states_bindActiveTexture(0, GL_TEXTURE_2D,  bloomout.texture_id);
-	states_bindActiveTexture(1, GL_TEXTURE_2D, lenscolor.texture);
-	states_bindActiveTexture(2, GL_TEXTURE_2D, fpscreen.texture_id);
+	glDrawBuffers(1, buffers);
+//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glUseProgram(fsblurv.programid);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, fulls.texture_id[0]);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
+	glDrawBuffers(1, buffers+1);
+	glUseProgram(fsblurh.programid);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, fourths.texture_id[0]);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, fulls.framebuffer_id);
+	glViewport(0,0, fulls.width, fulls.height);
+	glDrawBuffers(1, buffers+1);
+	glUseProgram(bloomout.programid);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, fulls.texture_id[0]);
+	states_bindActiveTexture(1, GL_TEXTURE_2D, fourths.texture_id[1]);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
+	glBindFramebuffer(GL_FRAMEBUFFER, eights.framebuffer_id);
+	glViewport(0,0, eights.width, eights.height);
+	glDrawBuffers(1, buffers+2);
 	glUseProgram(lensflare.programid);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, fulls.texture_id[1]);
+	states_bindActiveTexture(1, GL_TEXTURE_2D, lenscolor.texture);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glBindFramebuffer(GL_FRAMEBUFFER, lensoutblurv.framebuffer_id);
-	glViewport(0,0, lensoutblurv.width, lensoutblurv.height);
-//	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
-	states_bindActiveTexture(0, GL_TEXTURE_2D, lensout.texture_id);
+
+	glDrawBuffers(1, buffers);
 	glUseProgram(fsblurv.programid);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, eights.texture_id[2]);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-
-	glBindFramebuffer(GL_FRAMEBUFFER, lensoutblurh.framebuffer_id);
-	glViewport(0,0, lensoutblurh.width, lensoutblurh.height);
-//	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
-	states_bindActiveTexture(0, GL_TEXTURE_2D,  lensoutblurv.texture_id);
+	glDrawBuffers(1, buffers+1);
 	glUseProgram(fsblurh.programid);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, eights.texture_id[0]);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(0,0, fpscreen.width, fpscreen.height);
-//	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
+	glViewport(0,0, fulls.width, fulls.height);
+	glDrawBuffers(1, buffers);
+	glUseProgram(lensout.programid);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, fulls.texture_id[1]);
+	states_bindActiveTexture(1, GL_TEXTURE_2D, eights.texture_id[1]);
 	states_bindActiveTexture(2, GL_TEXTURE_2D, lensdirt.texture);
 	states_bindActiveTexture(3, GL_TEXTURE_2D, lensstar.texture);
-	states_bindActiveTexture(1, GL_TEXTURE_2D, lensoutblurh.texture_id);
-	states_bindActiveTexture(0, GL_TEXTURE_2D, bloomout.texture_id);
-	glUseProgram(lenscombine.programid);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-*/
-	glEnable(GL_DEPTH_TEST);
 
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_FALSE);
 }

@@ -12,6 +12,7 @@ uniform float uHaloWidth = 0.8;
 uniform vec3 uBias = vec3(-0.5);
 
 out vec4 fragColor;
+out vec4 frag2;
 vec3 textureDistorted(
       in sampler2D tex,
       in vec2 texcoord,
@@ -25,8 +26,8 @@ vec3 textureDistorted(
       );
    }
 void main(){
-	vec2 ftc = -fragtexcoord + vec2(1.0);
-	fragColor = vec4(0.0, 0.0, 0.0, 1.0);
+/*	vec2 ftc = -fragtexcoord + vec2(1.0);
+	frag2 = vec4(0.0, 0.0, 0.0, 1.0);
 	vec2 ghostVec = (vec2(0.5) - fragtexcoord) * uGhostDispersal;
 	vec2 texelSize = 1.0 / vec2(textureSize(texture0, 0));
 	// ghost vector to image centre:
@@ -37,13 +38,15 @@ void main(){
 		float weight = length(vec2(0.5) - offset) / length(vec2(0.5));
 		weight = pow(1.0 - weight, 10.0);
 
-//		fragColor.rgb += max(vec3(0.0), texture(texture0, offset).rgb + uBias) * weight * 0.2;
-		fragColor.rgb += max(vec3(0.0), textureDistorted(texture0, offset, direction, distortion).rgb + uBias) * weight;
+//		frag2.rgb += max(vec3(0.0), texture(texture0, offset).rgb + uBias) * weight * 0.2;
+		frag2.rgb += max(vec3(0.0), textureDistorted(texture0, offset, direction, distortion).rgb + uBias) * weight;
 	}
 	vec2 haloVec = normalize(ghostVec) * uHaloWidth;
 	float weight = length(vec2(0.5) - fract(fragtexcoord + haloVec)) / length(vec2(0.5));
 	weight = pow(1.0 - weight, 5.0);
-	fragColor.rgb += max(textureDistorted(texture0, fragtexcoord + haloVec, direction, distortion).rgb +uBias, vec3(0.0)) * weight * 30.0;
-	fragColor.rgb *= texture(texture1, vec2(length(vec2(0.5) - fragtexcoord) / length(vec2(0.5)), 0.0)).rgb;
-//	fragColor.rgb = vec3(0.5);
+	frag2.rgb += max(textureDistorted(texture0, fragtexcoord + haloVec, direction, distortion).rgb +uBias, vec3(0.0)) * weight * 30.0;
+	frag2.rgb *= texture(texture1, vec2(length(vec2(0.5) - fragtexcoord) / length(vec2(0.5)), 0.0)).rgb;
+*/
+//	frag2.rgb = vec3(0.5);
+	fragColor.rgba = vec4(1.0);
 }

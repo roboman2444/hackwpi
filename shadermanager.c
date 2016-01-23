@@ -137,6 +137,13 @@ shader_t shader_load(const char * filename){
 	if(gid) glAttachShader(s.programid, gid);
 
 	glBindFragDataLocation(s.programid, 0, "fragColor"); //todo add more later
+	glBindFragDataLocation(s.programid, 1, "frag1"); //todo add more later
+	glBindFragDataLocation(s.programid, 2, "frag2"); //todo add more later
+	glBindFragDataLocation(s.programid, 3, "frag3"); //todo add more later
+	glBindFragDataLocation(s.programid, 4, "frag4"); //todo add more later
+	glBindFragDataLocation(s.programid, 5, "frag5"); //todo add more later
+	glBindFragDataLocation(s.programid, 6, "frag6"); //todo add more later
+	glBindFragDataLocation(s.programid, 7, "frag7"); //todo add more later
 	CHECKGLERROR;
 
 	glBindAttribLocation(s.programid, POSATTRIBLOC, "posattrib"); //todo add more later
