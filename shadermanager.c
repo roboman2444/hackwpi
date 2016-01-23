@@ -6,11 +6,12 @@
 #include <GL/gl.h>
 #include "globaldefs.h"
 #include "shadermanager.h"
+#include "glhelp.h"
 
 
 int shader_printShaderLogStatus(const GLuint id){
 	int blen = 0;
-	glGetProgramiv(id, GL_INFO_LOG_LENGTH, &blen);
+	glGetShaderiv(id, GL_INFO_LOG_LENGTH, &blen);
 	if(blen > 1){
 		GLchar *log = (GLchar *) malloc(blen);
 		glGetShaderInfoLog(id, blen, 0, log);
@@ -94,10 +95,15 @@ shader_t shader_load(const char * filename){
 	printf("shader lengths %i %i %i\n", ffl, fvl, fgl);
 //	printf("shader contents\n%s\n", vs);
 //	printf("shader contents\n%s\n", fs);
+	CHECKGLERROR;
 	GLuint vid = glCreateShader(GL_VERTEX_SHADER);
+	CHECKGLERROR;
 	GLuint fid = glCreateShader(GL_FRAGMENT_SHADER);
+	CHECKGLERROR;
 	glShaderSource(vid, 1, (const GLchar **)&vs, 0);
+	CHECKGLERROR;
 	glShaderSource(fid, 1, (const GLchar **)&fs, 0);
+	CHECKGLERROR;
 
 	GLuint gid = 0;
 	if(gs){
@@ -106,9 +112,17 @@ shader_t shader_load(const char * filename){
 	}
 
 	glCompileShader(vid);
+	CHECKGLERROR;
 	shader_printShaderLogStatus(vid);
+	CHECKGLERROR;
+//	shader_printProgramLogStatus(vid);
+	CHECKGLERROR;
+
 	glCompileShader(fid);
+	CHECKGLERROR;
 	shader_printShaderLogStatus(fid);
+//	shader_printProgramLogStatus(fid);
+
 	if(gs) glCompileShader(gid);
 
 	if(gid)shader_printShaderLogStatus(gid);
@@ -117,23 +131,32 @@ shader_t shader_load(const char * filename){
 
 	s.programid = glCreateProgram();
 	glAttachShader(s.programid, vid);
+	CHECKGLERROR;
 	glAttachShader(s.programid, fid);
+	CHECKGLERROR;
 	if(gid) glAttachShader(s.programid, gid);
 
 	glBindFragDataLocation(s.programid, 0, "fragColor"); //todo add more later
+	CHECKGLERROR;
 
 	glBindAttribLocation(s.programid, POSATTRIBLOC, "posattrib"); //todo add more later
+	CHECKGLERROR;
 	glBindAttribLocation(s.programid, TCATTRIBLOC, "tcattrib"); //todo add more later
+	CHECKGLERROR;
 	glLinkProgram(s.programid);
+	CHECKGLERROR;
 	glDeleteShader(vid);
+	CHECKGLERROR;
 	glDeleteShader(fid);
 	if(gid)glDeleteShader(gid);
 	int status = 0, fail=0;
 	glGetProgramiv(s.programid, GL_LINK_STATUS, &status);
+	CHECKGLERROR;
 	if(status == GL_FALSE) fail = TRUE;
-	if(shader_printProgramLogStatus(s.programid) || fail){
+	if(shader_printProgramLogStatus(s.programid) || shader_printShaderLogStatus(s.programid) || fail){
 		fail = TRUE;
 	}
+	CHECKGLERROR;
 	if(fail){
 		s.programid = 0;
 		return s;

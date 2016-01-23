@@ -8,6 +8,8 @@
 
 #include "shadermanager.h"
 
+#include "glhelp.h"
+
 int main(const int argc, const char ** argv){
 	int width = 1280;
 	int height = 720;
@@ -19,10 +21,10 @@ int main(const int argc, const char ** argv){
 	if(!glfwInit()) return -1;
 
 	// Set window hints
-//    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  //  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-//    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-//    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+//	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+//	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+//	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     // Generate window and set context
 	window = glfwCreateWindow(width, height, "hack", NULL, NULL);
@@ -41,6 +43,7 @@ int main(const int argc, const char ** argv){
 //	glEnable(GL_CULL_FACE);
 //	glCullFace(GL_BACK);
 	//now init other shit
+	CHECKGLERROR;
 
 	shader_t fs = shader_load("./texturedmesh");
 	GLfloat quad[] = {-1.0, -1.0, 0.0, 0.0, 0.0,
