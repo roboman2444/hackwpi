@@ -1,10 +1,9 @@
-#version 400
+#version 330
 
 in vec2 pos;
-uniform vec2 mousePos;
-uniform vec2 differenceLastPos;
-uniform vec2 iRes;
-uniform sampler2D velocity0;
+uniform vec2 univec20; // Mouse Position
+uniform vec2 univec21; // Mouse Movement
+uniform sampler2D texture0; // velocity0
 
 layout(location=1) out vec4 velocity1;
 
@@ -12,14 +11,14 @@ void main()
 {
 	//DATA
 	
-	vec2 velocityIn = texture(velocity0,pos).xy;
+	vec2 velocityIn = texture(texture0,pos).xy;
 	velocityIn *= 0.99;
 
-	vec2 temp = mousePos*iRes;
+	vec2 temp = univec20;
 
 	vec2 mouseNormalised = vec2(temp.x,1-temp.y);
 
-	vec2 displacement = differenceLastPos*iRes;
+	vec2 displacement = univec21;
 
 	float dt = 1.0/60;
 	
@@ -33,6 +32,6 @@ void main()
 	}
 	else
 	{
-		velocity1 = texture(velocity0,pos);
+		velocity1 = texture(texture0,pos);
 	}
 }

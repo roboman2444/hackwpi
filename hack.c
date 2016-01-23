@@ -22,6 +22,8 @@
 
 #include "glstates.h"
 
+#include "fluids/fluids.h"
+
 // #define FRAMEBUFFER_ENABLE
 
 int main(const int argc, const char ** argv){
@@ -77,6 +79,8 @@ int main(const int argc, const char ** argv){
 
 	printf("bhaca\n");
 	depth_init();
+	printf("bhaca\n");
+	fluids_init();
 	glGenVertexArrays(1, &vaoid);
 	printf("bhaca\n");
 	glBindVertexArray(vaoid);
@@ -145,6 +149,8 @@ int main(const int argc, const char ** argv){
 		depth_get_depth();
 		depth_update();
 		depth_render(&c);
+
+		fluids_simulate();
 
 		#ifdef FRAMEBUFFER_ENABLE
 			frame buffer runpost();

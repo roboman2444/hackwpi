@@ -78,7 +78,7 @@ void depth_get_depth(void) {
 		for(i = 0; i < 640 * 480; i++) {
 			depthdata[i] = (GLfloat)rand() /RAND_MAX;
 		}
-		printf("%f\n", depthdata[rand()%(640 * 480)]);
+		// printf("%f\n", depthdata[rand()%(640 * 480)]);
 		depthneedsupdate = TRUE;
 
 	//}

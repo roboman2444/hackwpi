@@ -19,7 +19,8 @@ typedef struct shader_s {
 
 
 shader_t shader_load(const char * filename);
-
+shader_t shader_load_fv(const char *fragfile, const char *vertfile);
+shader_t shader_load_fvg(const char *fragfile, const char *vertfile, const char *geomfile);
 
 
 

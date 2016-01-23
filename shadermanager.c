@@ -34,18 +34,26 @@ int shader_printProgramLogStatus(const GLuint id){
 	return FALSE;
 }
 
+shader_t shader_load(const char *filename){
+	return shader_load_fvg(filename, filename, filename);
+}
 
-shader_t shader_load(const char * filename){
+shader_t shader_load_fv(const char *fragfile, const char *vertfile) {
+	return shader_load_fvg(fragfile, vertfile, "\0");
+}
+
+shader_t shader_load_fvg(const char *fragfile, const char *vertfile, const char *geomfile) {
 	shader_t s ={0};
-	size_t filenamesize = strlen(filename);
-	s.fragfile = malloc(filenamesize + 6);
-	s.vertfile = malloc(filenamesize + 6);
-	s.geomfile = malloc(filenamesize + 6);
+	size_t fragnamesize = strlen(fragfile);
+	size_t vertnamesize = strlen(vertfile);
+	size_t geomnamesize = strlen(geomfile);
+	s.fragfile = malloc(fragnamesize + 6);
+	s.vertfile = malloc(vertnamesize + 6);
+	s.geomfile = malloc(geomnamesize + 6);
 
-	sprintf((char *)s.fragfile, "%s.frag", filename);
-	sprintf((char *)s.vertfile, "%s.vert", filename);
-	sprintf((char *)s.geomfile, "%s.geom", filename);
-
+	sprintf((char *)s.fragfile, "%s.frag", fragfile);
+	sprintf((char *)s.vertfile, "%s.vert", vertfile);
+	sprintf((char *)s.geomfile, "%s.geom", geomfile);
 
 	FILE *ff = fopen(s.fragfile, "r");
 	FILE *fv = fopen(s.vertfile, "r");
@@ -54,7 +62,7 @@ shader_t shader_load(const char * filename){
 		if(ff) fclose(ff);
 		if(fv) fclose(fv);
 		if(fg) fclose(fg);
-		printf("shader not avaliable %s\n", filename);
+		printf("shader(s) not avaliable: %s %s\n", s.fragfile, s.vertfile);
 		return s;
 	}
 	fseek(ff, 0, SEEK_END);
@@ -67,7 +75,7 @@ shader_t shader_load(const char * filename){
 		if(ff) fclose(ff);
 		if(fv) fclose(fv);
 		if(fg) fclose(fg);
-		printf("shader no length %s\n", filename);
+		printf("shader(s) no length: %s %s\n", s.fragfile, s.vertfile);
 		return s;
 	}
 	int fgl = 0;
@@ -93,8 +101,8 @@ shader_t shader_load(const char * filename){
 		gs[fgl] = 0;
 	}
 
-//	printf("shader contents\n%s\n", vs);
-//	printf("shader contents\n%s\n", fs);
+	// printf("shader contents\n%s\n", vs);
+	// printf("shader contents\n%s\n", fs);
 	CHECKGLERROR;
 	GLuint vid = glCreateShader(GL_VERTEX_SHADER);
 	CHECKGLERROR;
@@ -149,6 +157,8 @@ shader_t shader_load(const char * filename){
 	glBindAttribLocation(s.programid, POSATTRIBLOC, "posattrib"); //todo add more later
 	CHECKGLERROR;
 	glBindAttribLocation(s.programid, TCATTRIBLOC, "tcattrib"); //todo add more later
+	CHECKGLERROR;
+	glBindAttribLocation(s.programid, OFFSETATTRIBLOC, "offsetattrib"); //todo add more later
 	CHECKGLERROR;
 	glLinkProgram(s.programid);
 	CHECKGLERROR;
