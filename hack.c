@@ -35,6 +35,16 @@ int main(const int argc, const char ** argv){
 		printf("Error initializing GLEW!%s\n", glewGetErrorString(glewError));
 		return FALSE;
 	}
-	//gl is all set up
+	
+	while (!glfwWindowShouldClose(window)) {
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+			glfwSetWindowShouldClose(window, GL_TRUE);
+	}
+
+	glfwTerminate();
+
 	return 0;
 } //todo
