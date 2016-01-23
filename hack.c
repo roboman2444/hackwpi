@@ -4,7 +4,8 @@
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 
-#define FALSE 0
+#include "globaldefs.h"
+
 int main(void){
 	int width = 1280;
 	int height = 720;
