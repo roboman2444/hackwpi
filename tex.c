@@ -20,6 +20,7 @@ void tex_load(const char * fn, struct texinfo *ti)
     glBindTexture(GL_TEXTURE_2D, texture);
 
     image = stbi_load(fn, &width, &height, &bpp, 0);
+    printf("tex %s w: %d, h: %d\n, bpp: %d\n", fn, width, height, bpp);
 
     glTexImage2D(GL_TEXTURE_2D, 0, (bpp == 3)?GL_RGB:GL_RGBA, width, height,
                  0, (bpp == 3)?GL_RGB:GL_RGBA, GL_UNSIGNED_BYTE, image);

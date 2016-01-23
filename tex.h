@@ -10,4 +10,6 @@ struct texinfo {
     GLint format;
 };
 
+void tex_load(const char * fn, struct texinfo *ti);
+
 #endif

@@ -7,6 +7,7 @@
 #include "globaldefs.h"
 
 #include "shadermanager.h"
+#include "tex.h"
 
 #include "glhelp.h"
 
@@ -76,6 +77,13 @@ int main(const int argc, const char ** argv){
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(GLuint), quadin, GL_STATIC_DRAW);
 
 		glUseProgram(fs.programid);
+
+	struct texinfo ti;
+	tex_load("test_texture.jpg", &ti);
+	printf("tex id: %d\n", ti.texture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, ti.texture);
+
 	//render loop lol
 	while (!glfwWindowShouldClose(window)) {
 //		glClearColor(1.0, 1.0, 1.0, 1.0);
