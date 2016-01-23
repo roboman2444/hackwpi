@@ -77,6 +77,7 @@ shader_t shader_load(const char * filename){
 		rewind(fg);
 	}
 
+	printf("shader lengths %i %i %i\n", ffl, fvl, fgl);
 
 	char *fs = malloc(ffl +1);
 	fread(fs, 1, ffl, ff);
@@ -86,13 +87,12 @@ shader_t shader_load(const char * filename){
 	vs[fvl] = 0;
 
 	char *gs = 0;
-	if(fgl){
-		fg = malloc(fgl +1);
+	if(fgl && fg){
+		gs = malloc(fgl +1);
 		fread(gs, 1, fgl, fg);
 		gs[fgl] = 0;
 	}
 
-	printf("shader lengths %i %i %i\n", ffl, fvl, fgl);
 //	printf("shader contents\n%s\n", vs);
 //	printf("shader contents\n%s\n", fs);
 	CHECKGLERROR;
