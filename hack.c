@@ -37,6 +37,9 @@ int main(const int argc, const char ** argv){
 		printf("Error initializing GLEW!%s\n", glewGetErrorString(glewError));
 		return FALSE;
 	}
+//	glEnable(GL_DEPTH_TEST);
+//	glEnable(GL_CULL_FACE);
+//	glCullFace(GL_BACK);
 	//now init other shit
 
 	shader_t fs = shader_load("./texturedmesh");
@@ -45,16 +48,36 @@ int main(const int argc, const char ** argv){
 			  1.0, 0.7, 0.0, 1.0, 1.0,
 			  -1.0, 1.0, 0.0, 0.0, 1.0};
 	GLuint quadin[] = {0, 1, 2, 0, 2, 3};
-	glEnableVertexAttribArray(POSATTRIBLOC);
-	glVertexAttribPointer(POSATTRIBLOC, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), quad);
-	glEnableVertexAttribArray(TCATTRIBLOC);
-	glVertexAttribPointer(TCATTRIBLOC, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), quad + 2 * sizeof(GL_FLOAT));
 
+
+	GLuint vaoid = 0;
+	GLuint bid;
+	GLuint ibid;
+
+	printf("bhaca\n");
+	glGenVertexArrays(1, &vaoid);
+	glBindVertexArray(vaoid);
+	glGenBuffers(1, &bid);
+	glGenBuffers(1, &ibid);
+	glBindBuffer(GL_ARRAY_BUFFER, bid);
+
+	glBufferData(GL_ARRAY_BUFFER, 20 * sizeof(GLfloat), quad, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(POSATTRIBLOC);
+	glVertexAttribPointer(POSATTRIBLOC, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void *) 0);
+	glEnableVertexAttribArray(TCATTRIBLOC);
+	glVertexAttribPointer(TCATTRIBLOC, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void *) (2 * sizeof(GLfloat)));
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibid);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(GLuint), quadin, GL_STATIC_DRAW);
+
+		glUseProgram(fs.programid);
 	//render loop lol
 	while (!glfwWindowShouldClose(window)) {
-		glUseProgram(fs.programid);
+		glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT);
 	//render shit
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, quadin);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+//		glDrawArrays(GL_TRIANGLES, 3, 0);
 	//swap em buffs
 		glfwSwapBuffers(window);
 		glfwPollEvents();
