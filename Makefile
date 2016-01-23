@@ -1,7 +1,7 @@
 CC = gcc
 LDFLAGS = -lGL -lGLEW -lglfw -lm
 CFLAGS = -Wall -Ofast -fstrict-aliasing -march=native
-OBJECTS = hack.o mathlib.o matrixlib.o shadermanager.o
+OBJECTS = hack.o mathlib.o matrixlib.o shadermanager.o framebuffers.o
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
