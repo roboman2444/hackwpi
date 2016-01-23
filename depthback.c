@@ -31,7 +31,7 @@ void depth_render(camera_t *c){
 	GLfloat mvp[16];
 	Matrix4x4_ToArrayFloatGL(&c->mvp, mvp);
 	glUniformMatrix4fv(depthbackshader.unimat40, 1, GL_FALSE, mvp);
-	glUniform3f(depthbackshader.univec30, 1.0/depthwidth, 1.0/depthheight, 1.0);
+	glUniform3f(depthbackshader.univec30, 1.0/depthwidth, 1.0/depthwidth, 1.0);
 	glUniform2i(depthbackshader.univec20, depthwidth, depthheight);
 	glDrawArrays(GL_POINTS, 0, numdepthverts);
 }

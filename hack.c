@@ -18,6 +18,8 @@
 
 #include "depthback.h"
 
+#include "postprocess.h"
+
 
 int main(const int argc, const char ** argv){
 	int width = 1280;
@@ -105,10 +107,14 @@ int main(const int argc, const char ** argv){
 	float rickanglex = 0.0;
 	float rickangley = 0.0;
 	float rickanglez = 0.0;
+	post_init(width, height);
 
 
 	//render loop lol
 	while (!glfwWindowShouldClose(window)) {
+
+		bind_fs();
+
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, ti.texture);
 		glUseProgram(fs.programid);
@@ -131,6 +137,8 @@ int main(const int argc, const char ** argv){
 	//render shit
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		depth_render(&c);
+
+		runpost();
 	//swap em buffs
 		glfwSwapBuffers(window);
 		glfwPollEvents();
