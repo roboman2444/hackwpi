@@ -153,7 +153,7 @@ shader_t shader_load(const char * filename){
 	glGetProgramiv(s.programid, GL_LINK_STATUS, &status);
 	CHECKGLERROR;
 	if(status == GL_FALSE) fail = TRUE;
-	if(shader_printProgramLogStatus(s.programid) || shader_printShaderLogStatus(s.programid) || fail){
+	if(shader_printProgramLogStatus(s.programid) fail){
 		fail = TRUE;
 	}
 	CHECKGLERROR;
