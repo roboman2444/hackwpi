@@ -123,7 +123,7 @@ shader_t shader_load(const char * filename){
 	glBindFragDataLocation(s.programid, 0, "fragColor"); //todo add more later
 
 	glBindAttribLocation(s.programid, POSATTRIBLOC, "posattrib"); //todo add more later
-	glBindAttribLocation(s.programid, TCATTRIBLOC, "posattrib"); //todo add more later
+	glBindAttribLocation(s.programid, TCATTRIBLOC, "tcattrib"); //todo add more later
 	glLinkProgram(s.programid);
 	glDeleteShader(vid);
 	glDeleteShader(fid);

@@ -19,10 +19,10 @@ int main(const int argc, const char ** argv){
 	if(!glfwInit()) return -1;
 
 	// Set window hints
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+//    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  //  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+//    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+//    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     // Generate window and set context
 	window = glfwCreateWindow(width, height, "hack", NULL, NULL);
@@ -56,6 +56,7 @@ int main(const int argc, const char ** argv){
 
 	printf("bhaca\n");
 	glGenVertexArrays(1, &vaoid);
+	printf("bhaca\n");
 	glBindVertexArray(vaoid);
 	glGenBuffers(1, &bid);
 	glGenBuffers(1, &ibid);
@@ -74,10 +75,11 @@ int main(const int argc, const char ** argv){
 		glUseProgram(fs.programid);
 	//render loop lol
 	while (!glfwWindowShouldClose(window)) {
+//		glClearColor(1.0, 1.0, 1.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT);
 	//render shit
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-//		glDrawArrays(GL_TRIANGLES, 3, 0);
+		glDrawArrays(GL_TRIANGLES, 3, 0);
 	//swap em buffs
 		glfwSwapBuffers(window);
 		glfwPollEvents();
