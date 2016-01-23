@@ -13,12 +13,14 @@
 
 #include "glstates.h"
 
+#include "freenect_sync/libfreenect_buffer.h"
+
 
 
 GLuint depthwidth = 640;
 GLuint depthheight = 480;
 GLuint depthtexid = 0;
-GLuint *depthdata;
+GLushort *depthdata;
 GLuint numdepthverts;
 GLuint depthvao;
 
@@ -67,6 +69,12 @@ void depth_update(void){
 	states_bindActiveTexture(0, GL_TEXTURE_2D, depthtexid);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16UI, depthwidth, depthheight, 0, GL_RED_INTEGER, GL_UNSIGNED_SHORT, depthdata);
 	depthneedsupdate = FALSE;
+}
+
+void depth_get_depth(void) {
+	if (depthneedsupdate) return;
+	if (freenect_sync_update_depth_buffer(depthdata, KINECT_INDEX) == 0)
+		depthneedsupdate = TRUE;
 }
 
 

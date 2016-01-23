@@ -22,6 +22,7 @@
 
 #include "glstates.h"
 
+// #define FRAMEBUFFER_ENABLE
 
 int main(const int argc, const char ** argv){
 	int width = 1280;
@@ -114,9 +115,14 @@ int main(const int argc, const char ** argv){
 	//render loop lol
 	while (!glfwWindowShouldClose(window)) {
 
-		bind_fs();
+		#ifdef FRAMEBUFFER_ENABLE
+			bind_fs();
+		#endif
 
 		states_bindActiveTexture(0, GL_TEXTURE_2D, ti.texture);
+		#ifndef FRAMEBUFFER_ENABLE
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		#endif
 		glUseProgram(fs.programid);
 		glBindVertexArray(vaoid);
 		rickanglex += 0.5;
@@ -136,9 +142,13 @@ int main(const int argc, const char ** argv){
 		glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT);
 	//render shit
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		depth_get_depth();
+		depth_update();
 		depth_render(&c);
 
-		runpost();
+		#ifdef FRAMEBUFFER_ENABLE
+			frame buffer runpost();
+		#endif
 	//swap em buffs
 		glfwSwapBuffers(window);
 		glfwPollEvents();
