@@ -13,7 +13,7 @@ int main(void){
 
 	GLFWwindow * window;
 	if(!glfwInit()) return -1;
-	
+
 	// Set window hints
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
