@@ -35,8 +35,11 @@ int main(const int argc, const char ** argv){
 		printf("Error initializing GLEW!%s\n", glewGetErrorString(glewError));
 		return FALSE;
 	}
-	
+	//now init other shit
+	//render loop lol
 	while (!glfwWindowShouldClose(window)) {
+	//render shit
+	//swap em buffs
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
