@@ -11,6 +11,8 @@
 #include "camera.h"
 #include "depthback.h"
 
+#include "glstates.h"
+
 
 
 GLuint depthwidth = 640;
@@ -25,7 +27,7 @@ int depthneedsupdate = FALSE;
 
 
 void depth_render(camera_t *c){
-	glBindTexture(GL_TEXTURE_2D, depthtexid);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, depthtexid);
 	glUseProgram(depthbackshader.programid);
 	glBindVertexArray(depthvao);
 	GLfloat mvp[16];
@@ -62,7 +64,7 @@ int createback(const int x, const int y, const float scalex, const float scaley)
 
 void depth_update(void){
 	if(!depthneedsupdate) return;
-	glBindTexture(GL_TEXTURE_2D, depthtexid);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, depthtexid);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16UI, depthwidth, depthheight, 0, GL_RED_INTEGER, GL_UNSIGNED_SHORT, depthdata);
 	depthneedsupdate = FALSE;
 }

@@ -12,7 +12,9 @@
 #include "tex.h"
 #include "glhelp.h"
 
+#include "glstates.h"
 #include "postprocess.h"
+
 
 
 shader_t fsquadshader;
@@ -23,7 +25,6 @@ shader_t fsblurv;
 shader_t lensflare;
 shader_t lenscombine;
 GLuint fsquad;
-Framebuffer screen;
 Framebuffer bloomv;
 Framebuffer bloomh;
 Framebuffer bloomout;
@@ -91,7 +92,7 @@ void genframes(int width, int height){
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, fpscreen.renderbuffer_id);
 	CHECKGLERROR;
 	glGenTextures(1, &fpscreen.texture_id);
-	glBindTexture(GL_TEXTURE_2D,fpscreen.texture_id);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, fpscreen.texture_id);
 	CHECKGLERROR;
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	CHECKGLERROR;
@@ -117,7 +118,7 @@ void genframes(int width, int height){
 //	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, lensout.width, lensout.height);
 //	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, lensout.renderbuffer_id);
 	glGenTextures(1, &lensout.texture_id);
-	glBindTexture(GL_TEXTURE_2D,lensout.texture_id);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, lensout.texture_id);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -136,7 +137,7 @@ void genframes(int width, int height){
 //	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, bloomout.width, bloomout.height);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, bloomout.renderbuffer_id);
 	glGenTextures(1, &bloomout.texture_id);
-	glBindTexture(GL_TEXTURE_2D,bloomout.texture_id);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, bloomout.texture_id);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -145,7 +146,6 @@ void genframes(int width, int height){
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, bloomout.width, bloomout.height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glDrawBuffers(1, buffers);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, bloomout.texture_id, 0);
-
 
 	glGenFramebuffers(1, &bloomv.framebuffer_id);
 	bloomv.width = width/4;
@@ -160,7 +160,7 @@ void genframes(int width, int height){
 //	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, bloomv.renderbuffer_id);
 	glGenTextures(1, &bloomv.texture_id);
 	CHECKGLERROR;
-	glBindTexture(GL_TEXTURE_2D, bloomv.texture_id);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, bloomv.texture_id);
 	CHECKGLERROR;
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	CHECKGLERROR;
@@ -190,7 +190,7 @@ void genframes(int width, int height){
 //	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, bloomh.width, bloomh.height);
 //	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, bloomh.renderbuffer_id);
 	glGenTextures(1, &bloomh.texture_id);
-	glBindTexture(GL_TEXTURE_2D,bloomh.texture_id);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, bloomh.texture_id);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -209,7 +209,7 @@ void genframes(int width, int height){
 //	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, bloomout.width, bloomout.height);
 //	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, bloomout.renderbuffer_id);
 	glGenTextures(1, &bloomout.texture_id);
-	glBindTexture(GL_TEXTURE_2D, bloomout.texture_id);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, bloomout.texture_id);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -230,7 +230,7 @@ void genframes(int width, int height){
 //	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, lensoutblurh.width, lensoutblurh.height);
 //	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, lensoutblurh.renderbuffer_id);
 	glGenTextures(1, &lensoutblurh.texture_id);
-	glBindTexture(GL_TEXTURE_2D,lensoutblurh.texture_id);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, lensoutblurh.texture_id);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -249,7 +249,7 @@ void genframes(int width, int height){
 //	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, lensoutblurv.width, lensoutblurv.height);
 //	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, lensoutblurv.renderbuffer_id);
 	glGenTextures(1, &lensoutblurv.texture_id);
-	glBindTexture(GL_TEXTURE_2D,lensoutblurv.texture_id);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, lensoutblurv.texture_id);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -257,7 +257,6 @@ void genframes(int width, int height){
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, lensoutblurv.width, lensoutblurv.height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glDrawBuffers(1, buffers);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, lensoutblurv.texture_id, 0);
-
 
 
 }
@@ -280,40 +279,34 @@ void runpost(void){
 	glBindFramebuffer(GL_FRAMEBUFFER, bloomv.framebuffer_id);
 	glViewport(0,0, bloomv.width, bloomv.height);
 //	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, fpscreen.texture_id);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, fpscreen.texture_id);
 	glUseProgram(fsblurv.programid);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, bloomh.framebuffer_id);
 	glViewport(0,0, bloomh.width, bloomh.height);
 //	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, bloomv.texture_id);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, bloomv.texture_id);
 	glUseProgram(fsblurh.programid);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, bloomout.framebuffer_id);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//	glBindFramebuffer(GL_FRAMEBUFFER, bloomout.framebuffer_id);
 	glViewport(0,0, bloomout.width, bloomout.height);
 //	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, bloomh.texture_id);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, fpscreen.texture_id);
+	states_bindActiveTexture(1, GL_TEXTURE_2D, bloomh.texture_id);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, fpscreen.texture_id);
 	glUseProgram(bloomoutshader.programid);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
+/*
 
 	glBindFramebuffer(GL_FRAMEBUFFER, lensout.framebuffer_id);
 //	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0,0, lensout.width, lensout.height);
 //	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, bloomout.texture_id);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, lenscolor.texture);
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, fpscreen.texture_id);
+	states_bindActiveTexture(0, GL_TEXTURE_2D,  bloomout.texture_id);
+	states_bindActiveTexture(1, GL_TEXTURE_2D, lenscolor.texture);
+	states_bindActiveTexture(2, GL_TEXTURE_2D, fpscreen.texture_id);
 	glUseProgram(lensflare.programid);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -321,8 +314,7 @@ void runpost(void){
 	glBindFramebuffer(GL_FRAMEBUFFER, lensoutblurv.framebuffer_id);
 	glViewport(0,0, lensoutblurv.width, lensoutblurv.height);
 //	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, lensout.texture_id);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, lensout.texture_id);
 	glUseProgram(fsblurv.programid);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -330,8 +322,7 @@ void runpost(void){
 	glBindFramebuffer(GL_FRAMEBUFFER, lensoutblurh.framebuffer_id);
 	glViewport(0,0, lensoutblurh.width, lensoutblurh.height);
 //	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, lensoutblurv.texture_id);
+	states_bindActiveTexture(0, GL_TEXTURE_2D,  lensoutblurv.texture_id);
 	glUseProgram(fsblurh.programid);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -340,17 +331,13 @@ void runpost(void){
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0,0, fpscreen.width, fpscreen.height);
 //	glClear(GL_COLOR_BUFFER_BIT); //may be able to remove
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, lensdirt.texture);
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, lensstar.texture);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, lensoutblurh.texture_id);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, bloomout.texture_id);
+	states_bindActiveTexture(2, GL_TEXTURE_2D, lensdirt.texture);
+	states_bindActiveTexture(3, GL_TEXTURE_2D, lensstar.texture);
+	states_bindActiveTexture(1, GL_TEXTURE_2D, lensoutblurh.texture_id);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, bloomout.texture_id);
 	glUseProgram(lenscombine.programid);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
+*/
 	glEnable(GL_DEPTH_TEST);
 
 }

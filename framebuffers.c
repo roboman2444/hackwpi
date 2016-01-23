@@ -4,6 +4,8 @@
 #include "framebuffers.h"
 #include "globaldefs.h"
 
+#include "glstates.h"
+
 Framebuffer create_framebuffer(int width, int height, GLenum type) {
 	Framebuffer buffer;
 
@@ -11,7 +13,7 @@ Framebuffer create_framebuffer(int width, int height, GLenum type) {
 	glBindFramebuffer(GL_FRAMEBUFFER, buffer.framebuffer_id);
 
 	glGenTextures(1, &buffer.texture_id);
-	glBindTexture(GL_TEXTURE_2D, buffer.texture_id);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, buffer.texture_id);
 	glTexImage2D(
 		GL_TEXTURE_2D,
 		0,

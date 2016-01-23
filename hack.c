@@ -20,6 +20,8 @@
 
 #include "postprocess.h"
 
+#include "glstates.h"
+
 
 int main(const int argc, const char ** argv){
 	int width = 1280;
@@ -96,8 +98,7 @@ int main(const int argc, const char ** argv){
 	struct texinfo ti;
 	tex_load("test_texture.jpg", &ti);
 	printf("tex id: %d\n", ti.texture);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, ti.texture);
+	states_bindActiveTexture(0,GL_TEXTURE_2D, ti.texture);
 
 	camera_t c = camera_create();
 
@@ -115,8 +116,7 @@ int main(const int argc, const char ** argv){
 
 		bind_fs();
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, ti.texture);
+		states_bindActiveTexture(0, GL_TEXTURE_2D, ti.texture);
 		glUseProgram(fs.programid);
 		glBindVertexArray(vaoid);
 		rickanglex += 0.5;

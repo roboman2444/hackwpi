@@ -4,6 +4,7 @@
 
 #include "globaldefs.h"
 #include "tex.h"
+#include "glstates.h"
 
 
 /* tex_load: loads and binds a texture from a filename into the current OpenGL
@@ -23,7 +24,7 @@ void tex_load(const char * fn, struct texinfo *ti)
 	if(!image) return;
     printf("tex %s w: %i, h: %i, bpp: %i\n", fn, width, height, bpp);
     glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    states_bindActiveTexture(0, GL_TEXTURE_2D, texture);
 
 
 int level;
@@ -42,7 +43,6 @@ int level;
 	glGenerateMipmap(GL_TEXTURE_2D);
 
     stbi_image_free(image);
-    glBindTexture(GL_TEXTURE_2D, 0);
     ti->texture = texture;
     ti->width = width;
     ti->height = height;
