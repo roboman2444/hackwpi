@@ -2,8 +2,12 @@
 #include <stdlib.h>
 #include <GL/glew.h>
 #include <GL/gl.h>
-#include <GL/glfw3.h>
+#include <GLFW/glfw3.h>
+
+#define FALSE 0
 int main(void){
+	int width = 1280;
+	int height = 720;
 	GLFWwindow * window;
 	if(!glfwInit()) return -1;
 	window = glfwCreateWindow(width, height, "hack", NULL, NULL);
