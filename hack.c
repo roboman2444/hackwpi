@@ -48,7 +48,7 @@ int main(const int argc, const char ** argv){
 		printf("Error initializing GLEW!%s\n", glewGetErrorString(glewError));
 		return FALSE;
 	}
-//	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 //	glEnable(GL_CULL_FACE);
 //	glCullFace(GL_BACK);
 	//now init other shit
@@ -109,6 +109,10 @@ int main(const int argc, const char ** argv){
 
 	//render loop lol
 	while (!glfwWindowShouldClose(window)) {
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, ti.texture);
+		glUseProgram(fs.programid);
+		glBindVertexArray(vaoid);
 		rickanglex += 0.5;
 		rickangley += 0.314;
 		rickanglez += 0.123;
@@ -126,7 +130,7 @@ int main(const int argc, const char ** argv){
 		glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT);
 	//render shit
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glDrawArrays(GL_TRIANGLES, 3, 0);
+		depth_render(&c);
 	//swap em buffs
 		glfwSwapBuffers(window);
 		glfwPollEvents();

@@ -6,6 +6,9 @@
 #include <GL/gl.h>
 
 #include "globaldefs.h"
+#include "shadermanager.h"
+#include "matrixlib.h"
+#include "camera.h"
 #include "depthback.h"
 
 
@@ -17,9 +20,20 @@ GLuint *depthdata;
 GLuint numdepthfaces;
 GLuint numdepthverts;
 GLuint depthvao;
+
+shader_t depthbackshader;
 int depthneedsupdate = FALSE;
 
 
+void depth_render(camera_t *c){
+	glBindTexture(GL_TEXTURE_2D, depthtexid);
+	glUseProgram(depthbackshader.programid);
+	glBindVertexArray(depthvao);
+	GLfloat mvp[16];
+	Matrix4x4_ToArrayFloatGL(&c->mvp, mvp);
+	glUniformMatrix4fv(depthbackshader.unimat40, 1, GL_FALSE, mvp);
+	glDrawElements(GL_TRIANGLES, 3 * numdepthfaces, GL_UNSIGNED_INT, 0);
+}
 int createback(const int x, const int y, const float scalex, const float scaley){
 	unsigned int fx = x;
 	unsigned int fy = y;
@@ -159,7 +173,10 @@ void depth_update(void){
 	depthneedsupdate = FALSE;
 }
 
+
 void depth_init(void){
+
+	depthbackshader = shader_load("depthback");
 	createback(640, 480, 1.0, 1.0);
 
 	depthneedsupdate = TRUE;
