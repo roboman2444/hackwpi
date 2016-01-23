@@ -26,7 +26,7 @@ int shader_printProgramLogStatus(const GLuint id){
 	if(blen > 1){
 		GLchar *log = (GLchar *) malloc(blen);
 		glGetProgramInfoLog(id, blen, 0, log);
-		printf("shader log: %s\n", log);
+		printf("program log: %s\n", log);
 		free(log);
 		return blen;
 	}
@@ -92,23 +92,27 @@ shader_t shader_load(const char * filename){
 	}
 
 	printf("shader lengths %i %i %i\n", ffl, fvl, fgl);
+//	printf("shader contents\n%s\n", vs);
+//	printf("shader contents\n%s\n", fs);
 	GLuint vid = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vid, 1, (const GLchar **)&vs, &fvl);
-	glCompileShader(vid);
 	GLuint fid = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fid, 1, (const GLchar **) &fs, &ffl);
-	glCompileShader(fid);
+	glShaderSource(vid, 1, (const GLchar **)&vs, 0);
+	glShaderSource(fid, 1, (const GLchar **)&fs, 0);
 
 	GLuint gid = 0;
 	if(gs){
 		gid = glCreateShader(GL_GEOMETRY_SHADER);
-		glShaderSource(gid, 1, (const GLchar **) &gs, &fgl);
-		glCompileShader(gid);
+		glShaderSource(gid, 1, (const GLchar **) &gs, 0);
 	}
+
+	glCompileShader(vid);
+	shader_printShaderLogStatus(vid);
+	glCompileShader(fid);
+	shader_printShaderLogStatus(fid);
+	if(gs) glCompileShader(gid);
+
+	if(gid)shader_printShaderLogStatus(gid);
 	printf("shader ids %i %i %i\n", fid, vid, gid);
-	shader_printProgramLogStatus(fid);
-	shader_printProgramLogStatus(vid);
-	shader_printProgramLogStatus(gid);
 
 
 	s.programid = glCreateProgram();
@@ -119,6 +123,7 @@ shader_t shader_load(const char * filename){
 	glBindFragDataLocation(s.programid, 0, "fragColor"); //todo add more later
 
 	glBindAttribLocation(s.programid, POSATTRIBLOC, "posattrib"); //todo add more later
+	glBindAttribLocation(s.programid, TCATTRIBLOC, "posattrib"); //todo add more later
 	glLinkProgram(s.programid);
 	glDeleteShader(vid);
 	glDeleteShader(fid);
@@ -133,6 +138,7 @@ shader_t shader_load(const char * filename){
 		s.programid = 0;
 		return s;
 	}
+
 	glUseProgram(s.programid);
 	char texstring[10];
 	int i;
@@ -150,6 +156,15 @@ shader_t shader_load(const char * filename){
 	s.univec31 = glGetUniformLocation(s.programid, "univec31");
 	s.univec20 = glGetUniformLocation(s.programid, "univec20");
 	s.univec21 = glGetUniformLocation(s.programid, "univec21");
+
+	if(gs) free(gs);
+	if(vs) free(vs);
+	if(fs) free(fs);
+
+	if(ff) fclose(ff);
+	if(fv) fclose(fv);
+	if(fg) fclose(fg);
+
 
 	return s;
 

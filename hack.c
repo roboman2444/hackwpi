@@ -6,6 +6,8 @@
 
 #include "globaldefs.h"
 
+#include "shadermanager.h"
+
 int main(const int argc, const char ** argv){
 	int width = 1280;
 	int height = 720;
@@ -36,9 +38,23 @@ int main(const int argc, const char ** argv){
 		return FALSE;
 	}
 	//now init other shit
+
+	shader_t fs = shader_load("./texturedmesh");
+	GLfloat quad[] = {-1.0, -1.0, 0.0, 0.0, 0.0,
+			  1.0, -1.0, 0.0, 1.0, 0.0,
+			  1.0, 0.7, 0.0, 1.0, 1.0,
+			  -1.0, 1.0, 0.0, 0.0, 1.0};
+	GLuint quadin[] = {0, 1, 2, 0, 2, 3};
+	glEnableVertexAttribArray(POSATTRIBLOC);
+	glVertexAttribPointer(POSATTRIBLOC, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), quad);
+	glEnableVertexAttribArray(TCATTRIBLOC);
+	glVertexAttribPointer(TCATTRIBLOC, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), quad + 2 * sizeof(GL_FLOAT));
+
 	//render loop lol
 	while (!glfwWindowShouldClose(window)) {
+		glUseProgram(fs.programid);
 	//render shit
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, quadin);
 	//swap em buffs
 		glfwSwapBuffers(window);
 		glfwPollEvents();

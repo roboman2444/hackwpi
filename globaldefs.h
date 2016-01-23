@@ -5,6 +5,7 @@
 #define FALSE 0
 
 #define POSATTRIBLOC 0
+#define TCATTRIBLOC 1
 
 #include "types.h"
 
