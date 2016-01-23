@@ -3,6 +3,13 @@
 
 #include <GL/gl.h>
 
-GLuint create_framebuffer(int width, int height, GLenum type);
+typedef struct {
+	GLuint framebuffer_id;
+	GLuint texture_id;
+	GLuint renderbuffer_id;
+} Framebuffer;
+
+Framebuffer create_framebuffer(int width, int height, GLenum type);
+void delete_framebuffer(Framebuffer framebuffer);
 
 #endif

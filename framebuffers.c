@@ -4,14 +4,14 @@
 #include "framebuffers.h"
 #include "globaldefs.h"
 
-GLuint create_framebuffer(int width, int height, GLenum type) {
-	GLuint frameBuffer;
-	glGenFramebuffers(1, &frameBuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+Framebuffer create_framebuffer(int width, int height, GLenum type) {
+	Framebuffer buffer;
 
-	GLuint texColorBuffer;
-	glGenTextures(1, &texColorBuffer);
-	glBindTexture(GL_TEXTURE_2D, texColorBuffer);
+	glGenFramebuffers(1, &buffer.framebuffer_id);
+	glBindFramebuffer(GL_FRAMEBUFFER, buffer.framebuffer_id);
+
+	glGenTextures(1, &buffer.texture_id);
+	glBindTexture(GL_TEXTURE_2D, buffer.texture_id);
 	glTexImage2D(
 		GL_TEXTURE_2D,
 		0,
@@ -29,9 +29,25 @@ GLuint create_framebuffer(int width, int height, GLenum type) {
 		GL_FRAMEBUFFER,
 		GL_COLOR_ATTACHMENT0,
 		GL_TEXTURE_2D,
-		texColorBuffer,
+		buffer.texture_id,
 		0
 	);
 
-	return frameBuffer;
+	glGenRenderbuffers(1, &buffer.renderbuffer_id);
+	glBindRenderbuffer(GL_RENDERBUFFER, buffer.renderbuffer_id);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+	glFramebufferRenderbuffer(
+		GL_FRAMEBUFFER,
+		GL_DEPTH_STENCIL_ATTACHMENT,
+		GL_RENDERBUFFER,
+		buffer.renderbuffer_id
+	);
+
+	return buffer;
+}
+
+void delete_framebuffer(Framebuffer framebuffer) {
+	glDeleteRenderbuffers(1, &framebuffer.renderbuffer_id);
+	glDeleteTextures(1, &framebuffer.texture_id);
+	glDeleteFramebuffers(1, &framebuffer.framebuffer_id);
 }
