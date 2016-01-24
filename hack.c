@@ -23,6 +23,7 @@
 #include "glstates.h"
 
 #include "fluids/fluids.h"
+#include "grid.h"
 
 // #define FRAMEBUFFER_ENABLE
 
@@ -64,6 +65,9 @@ int main(const int argc, const char ** argv){
 	GLint maxbufattach = 0;
 	glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxbufattach);
 	printf("max attachments are %i\n", maxbufattach);
+
+	createWaveBuffer(10, 10, 2, 2);
+	init_grid_shaders();
 
 	shader_t fs = shader_load("./texturedmesh");
 	GLfloat quad[] = {-1.0, -1.0, 0.0, 0.0, 0.0,
@@ -146,14 +150,21 @@ int main(const int argc, const char ** argv){
 		glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT);
 	//render shit
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		
+		glUseProgram(grid_shader.programid);
+		glBindVertexArray(grid_vao);
+		Matrix4x4_ToArrayFloatGL(&c.mvp, mvp);
+		glUniformMatrix4fv(grid_shader.unimat40, 1, GL_FALSE, mvp);
+		glDrawElements(GL_TRIANGLES, grid_numelements, GL_UNSIGNED_INT, 0);
+
 		depth_get_depth();
 		depth_update();
 		depth_render(&c);
 
-		fluids_simulate();
+		// fluids_simulate();
 
 		#ifdef FRAMEBUFFER_ENABLE
-			frame buffer runpost();
+			runpost();
 		#endif
 	//swap em buffs
 		glfwSwapBuffers(window);
