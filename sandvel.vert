@@ -1,12 +1,7 @@
 #version 330
 
-in sampler2D texture0;
-in sampler2D texture1;
-in sampler2D texture2;
 in vec3 posattrib;
 in vec2 tcattrib;
-
-uniform int uniint0;
 
 out vec2 tc;
 

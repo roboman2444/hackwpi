@@ -92,8 +92,7 @@ int main(const int argc, const char ** argv){
 	printf("bhaca\n");
 	depth_init();
 	printf("bhaca\n");
-	fluids_init();
-	sand_init(128);
+//	fluids_init();
 	glGenVertexArrays(1, &vaoid);
 	printf("bhaca\n");
 	states_bindVertexArray(vaoid);
@@ -127,6 +126,7 @@ int main(const int argc, const char ** argv){
 	float rickangley = 0.0;
 	float rickanglez = 0.0;
 	post_init(width, height);
+	sand_init(128);
 
 	cube_load("cubemap/room.png");
 
@@ -136,6 +136,7 @@ int main(const int argc, const char ** argv){
 
 	//render loop lol
 	while (!glfwWindowShouldClose(window)) {
+		sand_phys();
 
 		#ifdef FRAMEBUFFER_ENABLE
 			bind_fs();
@@ -143,9 +144,11 @@ int main(const int argc, const char ** argv){
 
 		#ifndef FRAMEBUFFER_ENABLE
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glViewport(0, 0, width, height);
 		#endif
 		states_depthMask(GL_TRUE);
 		glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT);
+
 
 		cube_render(&c);
 
@@ -169,8 +172,10 @@ int main(const int argc, const char ** argv){
 	//render shit
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+		sand_render(&c);
 		depth_update();
 		depth_render(&c);
+
 
 //		glEnable(GL_BLEND);
 //		glDepthMask(GL_FALSE);

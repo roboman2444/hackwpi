@@ -102,7 +102,7 @@ void bind_fs(void){
 
 void runpost(void){
 	glstate_t s = {STATESENABLECULLFACE, GL_ONE, GL_ONE, GL_LESS, GL_BACK, GL_FALSE, GL_LESS, 0.0, fsquad, 0, 0, 0, 0, 0, fsblurv.programid, 0, {0}, {0}, {0}, {0}, {0}};
-	states_setState(s);
+	states_forceState(s);
 //	states_bindVertexArray(fsquad);
 	glBindFramebuffer(GL_FRAMEBUFFER, fourths.framebuffer_id);
 	glViewport(0,0, fourths.width, fourths.height);
@@ -117,7 +117,7 @@ void runpost(void){
 
 
 	glstate_t st = {STATESENABLECULLFACE, GL_ONE, GL_ONE, GL_LESS, GL_BACK, GL_FALSE, GL_LESS, 0.0, fsquad, 0, 0, 0, 0, 0, fsblurh.programid, 0, {0}, {0}, {0}, {0}, {0}};
-	states_setState(st);
+	states_forceState(st);
 	glDrawBuffers(1, buffers+1);
 //	glDrawBuffers(3, buffers);
 //	glUseProgram(fsblurh.programid);
@@ -131,7 +131,7 @@ void runpost(void){
 //	glDrawBuffers(1, buffers);
 //	glDrawBuffers(3, buffers);
 	glstate_t sp = {STATESENABLECULLFACE, GL_ONE, GL_ONE, GL_LESS, GL_BACK, GL_FALSE, GL_LESS, 0.0, fsquad, 0, 0, 0, 0, 0, bloomout.programid, 0, {0}, {0}, {0}, {0}, {0}};
-	states_setState(sp);
+	states_forceState(sp);
 
 //	glUseProgram(bloomout.programid);
 	states_bindActiveTexture(0, GL_TEXTURE_2D, fulls.texture_id[0]);
@@ -140,7 +140,7 @@ void runpost(void){
 
 
 	glstate_t sd = {STATESENABLECULLFACE, GL_ONE, GL_ONE, GL_LESS, GL_BACK, GL_FALSE, GL_LESS, 0.0, fsquad, 0, 0, 0, 0, 0, lensflare.programid, 0, {0}, {0}, {0}, {0}, {0}};
-	states_setState(sd);
+	states_forceState(sd);
 	glBindFramebuffer(GL_FRAMEBUFFER, eights.framebuffer_id);
 	glViewport(0,0, eights.width, eights.height);
 //	glDrawBuffers(3, buffers);
@@ -152,7 +152,7 @@ void runpost(void){
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 	glstate_t sc = {STATESENABLECULLFACE, GL_ONE, GL_ONE, GL_LESS, GL_BACK, GL_FALSE, GL_LESS, 0.0, fsquad, 0, 0, 0, 0, 0, fsblurh.programid, 0, {0}, {0}, {0}, {0}, {0}};
-	states_setState(sc);
+	states_forceState(sc);
 
 //	glDrawBuffers(3, buffers);
 	glDrawBuffers(1, buffers);
@@ -162,7 +162,7 @@ void runpost(void){
 
 
 	glstate_t sb = {STATESENABLECULLFACE, GL_ONE, GL_ONE, GL_LESS, GL_BACK, GL_FALSE, GL_LESS, 0.0, fsquad, 0, 0, 0, 0, 0, fsblurv.programid, 0, {0}, {0}, {0}, {0}, {0}};
-	states_setState(sb);
+	states_forceState(sb);
 
 	glDrawBuffers(1, buffers+1);
 //	glDrawBuffers(3, buffers);
@@ -172,7 +172,7 @@ void runpost(void){
 
 
 	glstate_t sk = {STATESENABLECULLFACE, GL_ONE, GL_ONE, GL_LESS, GL_BACK, GL_FALSE, GL_LESS, 0.0, fsquad, 0, 0, 0, 0, 0, lensout.programid, 0, {0}, {0}, {0}, {0}, {0}};
-	states_setState(sk);
+	states_forceState(sk);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0,0, fulls.width, fulls.height);

@@ -85,7 +85,7 @@ void depth_update(void){
 		}
 	}
 	prevlarge = mxd;
-	printf("max depth %i min depth %i\n", mxd, mid);
+//	printf("max depth %i min depth %i\n", mxd, mid);
 	depth_data_ready = FALSE;
 	pthread_mutex_unlock(&depth_mutex);
 
