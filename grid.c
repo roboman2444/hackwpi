@@ -47,7 +47,7 @@ void createWaveBuffer(const int x, const int y, const float scalex, const float 
 	    }
 	}
     glGenVertexArrays(1, &grid_vao);
-    glBindVertexArray(grid_vao);
+    states_bindVertexArray(grid_vao);
     glGenBuffers(1, &grid_vertices);
     glBindBuffer(GL_ARRAY_BUFFER, grid_vertices);
     glBufferData(GL_ARRAY_BUFFER, numverts * 5 * sizeof(GLfloat), wavebuffer, GL_STATIC_DRAW);

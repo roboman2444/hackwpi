@@ -35,9 +35,9 @@ void depth_render(camera_t *c){
 	states_bindActiveTexture(0, GL_TEXTURE_2D, depthtexid);
 	states_bindActiveTexture(2, GL_TEXTURE_2D, coltexid);
 	states_bindActiveTexture(1, GL_TEXTURE_CUBE_MAP, cubemapid);
-	glUseProgram(depthbackshader.programid);
-	glBindVertexArray(depthvao);
-	//glBindVertexArray(fsquad);
+	states_useProgram(depthbackshader.programid);
+	states_bindVertexArray(depthvao);
+	//states_bindVertexArray(fsquad);
 	GLfloat mvp[16];
 	Matrix4x4_ToArrayFloatGL(&c->mvp, mvp);
 	glUniformMatrix4fv(depthbackshader.unimat40, 1, GL_FALSE, mvp);
@@ -58,7 +58,7 @@ int createback(const int x, const int y, const float scalex, const float scaley)
 		wavebuffer[((iy * x + ix) * 2) +1] = (float) iy;
 	}}
 	glGenVertexArrays(1, &depthvao);
-	glBindVertexArray(depthvao);
+	states_bindVertexArray(depthvao);
 	GLuint vertid;
 	glGenBuffers(1, &vertid);
 	glBindBuffer(GL_ARRAY_BUFFER, vertid);

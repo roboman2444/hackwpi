@@ -27,10 +27,10 @@ shader_t cubeshader;
 
 void cube_render(camera_t *c){
 	glstate_t s = {STATESENABLEDEPTH|STATESENABLECULLFACE, GL_ONE, GL_ONE, GL_LESS, GL_BACK, GL_FALSE, GL_LESS, 0.0, cubevao, 0, 0, 0, 0, 0, cubeshader.programid, 0, {0}, {0}, {0, 0}, {0, 0}, {0, 0}};
-	states_forceState(s);
+	states_setState(s);
 	states_bindActiveTexture(0, GL_TEXTURE_CUBE_MAP, cubemapid);
-//	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapid);
-//	glUseProgram(cubeshader.programid);
+//	states_bindTexture(GL_TEXTURE_CUBE_MAP, cubemapid);
+//	states_useProgram(cubeshader.programid);
 //	glBindVertexArray(cubevao);
 	GLfloat mvp[16];
 	Matrix4x4_ToArrayFloatGL(&c->mvronlyp, mvp);
@@ -62,14 +62,14 @@ GLuint cubefaces[36] = { 0, 1, 2, 0, 2, 3,
 	GLuint bid;
 	GLuint iid;
 	glGenVertexArrays(1, &cubevao);
-	glBindVertexArray(cubevao);
+	states_bindVertexArray(cubevao);
 	glGenBuffers(1, &bid);
 	glGenBuffers(1, &iid);
-	glBindBuffer(GL_ARRAY_BUFFER, bid);
+	states_bindBuffer(GL_ARRAY_BUFFER, bid);
 	glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(GLfloat), cubeverts, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(POSATTRIBLOC);
 	glVertexAttribPointer(POSATTRIBLOC, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void *) 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iid);
+	states_bindBuffer(GL_ELEMENT_ARRAY_BUFFER, iid);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 36 * sizeof(GLuint), cubefaces, GL_STATIC_DRAW);
 }
 
