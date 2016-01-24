@@ -21,6 +21,7 @@
 GLuint depthwidth = 640;
 GLuint depthheight = 480;
 GLuint depthtexid = 0;
+GLuint coltexid = 0;
 GLfloat *depthdata;
 GLuint numdepthverts;
 GLuint depthvao;
@@ -30,6 +31,7 @@ shader_t depthbackshader;
 
 void depth_render(camera_t *c){
 	states_bindActiveTexture(0, GL_TEXTURE_2D, depthtexid);
+	states_bindActiveTexture(2, GL_TEXTURE_2D, coltexid);
 	states_bindActiveTexture(1, GL_TEXTURE_CUBE_MAP, cubemapid);
 	glUseProgram(depthbackshader.programid);
 	glBindVertexArray(depthvao);
@@ -86,7 +88,8 @@ void depth_update(void){
 */
 	states_bindActiveTexture(0, GL_TEXTURE_2D, depthtexid);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, depthwidth, depthheight, 0, GL_RED, GL_FLOAT, depthdata);
-	depth_data_ready = FALSE;
+//	states_bindActiveTexture(0, GL_TEXTURE_2D, coltexid);
+//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, depthwidth/2, depthheight/2, 0, GL_RGB, GL_UNSIGNED_BYTE, rawcolordata);
 }
 
 void depth_init(void){
@@ -98,6 +101,13 @@ void depth_init(void){
 	depthdata = malloc(depthwidth * depthheight * sizeof(GLfloat));
 	glGenTextures(1, &depthtexid);
 	states_bindActiveTexture(0, GL_TEXTURE_2D, depthtexid);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glGenTextures(1, &coltexid);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, coltexid);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
