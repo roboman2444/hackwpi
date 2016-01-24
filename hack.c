@@ -176,7 +176,7 @@ int main(const int argc, const char ** argv){
 		glUniform3f(grid_shader.univec31, c.pos[0], c.pos[1], c.pos[2]);
 		glDrawElements(GL_TRIANGLES, grid_numelements, GL_UNSIGNED_INT, 0);
 
-		// fluids_simulate();
+		fluids_simulate();
 
 		#ifdef FRAMEBUFFER_ENABLE
 			runpost();
@@ -211,6 +211,11 @@ int main(const int argc, const char ** argv){
 
 		c.angle[0] += (lastXpos - xpos) / 10;
 		c.angle[2] += (lastYpos - ypos) / 10;
+		if (c.angle[2] < -90) {
+			c.angle[2] = -90;
+		} else if (c.angle[2] > 90) {
+			c.angle[2] = 90;
+		}
 
 		lastXpos = xpos;
 		lastYpos = ypos;
