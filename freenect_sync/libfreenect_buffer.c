@@ -51,7 +51,7 @@ void *freenect_threadfunc(void *arg) {
 	freenect_set_depth_mode(fn_device, freenect_find_depth_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_DEPTH_MM));
 	
 	freenect_start_depth(fn_device);
-	freenect_set_tilt_degs(fn_device, 8);
+	//freenect_set_tilt_degs(fn_device, 8);
 	/*
 	if (using_video) {
 		freenect_set_video_callback(fn_device, update_video_buffer);
@@ -65,20 +65,10 @@ void *freenect_threadfunc(void *arg) {
 
 	while (fn_alive && freenect_process_events(fn_context) >= 0) {
 		
-		usleep(200000);
-		freenect_set_led(fn_device, LED_OFF);
-		usleep(200000);
-		freenect_set_led(fn_device, LED_GREEN);
-		usleep(200000);
-		freenect_set_led(fn_device, LED_RED);
-		usleep(200000);
-		freenect_set_led(fn_device, LED_YELLOW);
-		
+		usleep(16000);
 	}
 
 	printf("\nshutting down streams...\n");
-
-	freenect_set_tilt_degs(fn_device, 31);
 
 	freenect_stop_depth(fn_device);
 	freenect_stop_video(fn_device);
