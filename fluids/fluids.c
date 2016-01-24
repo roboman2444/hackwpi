@@ -17,7 +17,7 @@
 
 #define BUFFER_OFFSET(i) ((char*)NULL + (i))
 
-shader_t mainShader, addForce, advectVelocity, divergenceShader, jacobiSolver, 
+shader_t mainShader, addForce, advectVelocity, divergenceShader, jacobiSolver,
 		 jacobiSolverBound, quadProgram, subtractPressure,
 		 texCopyShader, velocityBoundary;
 
@@ -36,7 +36,6 @@ GLuint fluidsheight = 480;
 GLenum drawBuffers[5];
 
 int fluids_init(void){
-	
 	// Shaders loaded
 	mainShader 			= shader_load("fluids/MainShader");
 	addForce 			= shader_load_fv("fluids/addForce", "fluids/MainShader");
@@ -48,7 +47,6 @@ int fluids_init(void){
 	quadProgram 		= shader_load("fluids/quadProgram");
 	subtractPressure 	= shader_load_fv("fluids/subtractPressureGradient", "fluids/MainShader");
 	texCopyShader 		= shader_load_fv("fluids/texCopyShader", "fluids/MainShader");
-	
 	//Create Vertex Array Object
 	glGenVertexArrays(1, &All_screen);
 	states_bindVertexArray(All_screen);
@@ -88,11 +86,10 @@ int fluids_init(void){
 	 x, y,
 	-x, y
 	};	//Don't need index data for this peasant mesh!
-	
 	GLuint fluid;//VBO for fluid wall
 	glGenBuffers(1, &fluid);
 	states_bindBuffer(GL_ARRAY_BUFFER, fluid);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(fluidwall), &fluidwall, GL_STATIC_DRAW);	
+	glBufferData(GL_ARRAY_BUFFER, sizeof(fluidwall), &fluidwall, GL_STATIC_DRAW);
 	//Assign attribs
 	glVertexAttribPointer(POSATTRIBLOC, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(POSATTRIBLOC);
@@ -102,7 +99,6 @@ int fluids_init(void){
 	//Another VAO for boundary
 	glGenVertexArrays(1, &boundary);
 	states_bindVertexArray(boundary);
-	
 	GLfloat boundaryWall[] = {
 
 		//left

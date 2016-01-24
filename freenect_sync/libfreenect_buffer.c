@@ -47,7 +47,7 @@ void *freenect_threadfunc(void *arg) {
 	freenect_set_depth_callback(fn_device, update_depth_buffer);
 	freenect_set_video_callback(fn_device, update_video_buffer);
 	freenect_set_video_mode(fn_device, freenect_find_video_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_VIDEO_RGB));
-	freenect_set_depth_mode(fn_device, freenect_find_depth_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_DEPTH_11BIT));
+	freenect_set_depth_mode(fn_device, freenect_find_depth_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_DEPTH_MM));
 	freenect_set_video_buffer(fn_device, rgb_back_buffer);
 
 	freenect_start_depth(fn_device);
@@ -88,7 +88,6 @@ void update_depth_buffer(freenect_device *dev, void *v_depth, uint32_t timestamp
 
 void update_video_buffer(freenect_device *dev, void *rgb, uint32_t timestamp) {
 	pthread_mutex_lock(&video_mutex);
-	
 	rgb_back_buffer = rawvideodata;
 	freenect_set_video_buffer(dev, rgb_back_buffer);
 	rawvideodata = (uint8_t *) rgb;

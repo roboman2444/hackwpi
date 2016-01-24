@@ -69,19 +69,27 @@ int createback(const int x, const int y, const float scalex, const float scaley)
 }
 
 
-
+int prevlarge = 0;
 void depth_update(void){
+	int mxd = 0.0;
+	int mid = 0.0;
 	pthread_mutex_lock(&depth_mutex);
 	if (depth_data_ready) {
 		int i;
 		for(i = 0; i < depthwidth * depthheight; i++) {
-			depthdata[i] = ((GLfloat) rawdepthdata[depthwidth * depthheight - i - 1])*-0.0001 + 1.0;
+			int depth = rawdepthdata[depthwidth * depthheight - i - 1];
+			if(!i || mxd < depth) mxd = depth;
+			if(depth ==0) depth = prevlarge;
+			depthdata[i] = 1.0 - ((GLfloat) depth)/2048.0 ;
+			if(!i || mid > depth) mid = depth;
 		}
 	}
+	prevlarge = mxd;
+	printf("max depth %i min depth %i\n", mxd, mid);
 	depth_data_ready = FALSE;
 	pthread_mutex_unlock(&depth_mutex);
 
-	pthread_mutex_lock(&video_mutex);
+/*	pthread_mutex_lock(&video_mutex);
 	if (video_data_ready) {
 		// videodata = rawvideodata;
 		int i;
@@ -91,11 +99,11 @@ void depth_update(void){
 	}
 	video_data_ready = FALSE;
 	pthread_mutex_unlock(&video_mutex);
-
+*/
 	states_bindActiveTexture(0, GL_TEXTURE_2D, depthtexid);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, depthwidth, depthheight, 0, GL_RED, GL_FLOAT, depthdata);
-	states_bindActiveTexture(0, GL_TEXTURE_2D, coltexid);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, depthwidth, depthheight, 0, GL_RGB, GL_UNSIGNED_BYTE, videodata);
+//	states_bindActiveTexture(0, GL_TEXTURE_2D, coltexid);
+//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, depthwidth, depthheight, 0, GL_RGB, GL_UNSIGNED_BYTE, videodata);
 }
 
 void depth_init(void){

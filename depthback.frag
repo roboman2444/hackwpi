@@ -15,6 +15,5 @@ void main(){
 	vec3 bounce = reflect(viewnorm, norm);
 	fragColor = textureLod(texture1, bounce, 2.5) * 0.1;
 
-	fragColor += texture(texture2, tc);
-	//fragColor.rg = worldpos.rg;
+	fragColor.r += texture(texture0, tc).r * 0.1;
 }
