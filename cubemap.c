@@ -26,10 +26,12 @@ GLuint cubevao;
 shader_t cubeshader;
 
 void cube_render(camera_t *c){
+	glstate_t s = {STATESENABLEDEPTH|STATESENABLECULLFACE, GL_ONE, GL_ONE, GL_LESS, GL_BACK, GL_FALSE, GL_LESS, 0.0, cubevao, 0, 0, 0, 0, 0, cubeshader.programid, 0, {0}, {0}, {0, 0}, {0, 0}, {0, 0}};
+	states_forceState(s);
 	states_bindActiveTexture(0, GL_TEXTURE_CUBE_MAP, cubemapid);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapid);
-	glUseProgram(cubeshader.programid);
-	glBindVertexArray(cubevao);
+//	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapid);
+//	glUseProgram(cubeshader.programid);
+//	glBindVertexArray(cubevao);
 	GLfloat mvp[16];
 	Matrix4x4_ToArrayFloatGL(&c->mvronlyp, mvp);
 	glUniformMatrix4fv(cubeshader.unimat40, 1, GL_FALSE, mvp);

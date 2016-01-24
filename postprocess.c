@@ -101,23 +101,26 @@ void bind_fs(void){
 }
 
 void runpost(void){
-	glBindVertexArray(fsquad);
-	glDisable(GL_DEPTH_TEST);
-	glDepthMask(GL_TRUE);
+	glstate_t s = {STATESENABLECULLFACE, GL_ONE, GL_ONE, GL_LESS, GL_BACK, GL_FALSE, GL_LESS, 0.0, fsquad, 0, 0, 0, 0, 0, fsblurv.programid, 0, {0}, {0}, {0}, {0}, {0}};
+	states_forceState(s);
+//	glBindVertexArray(fsquad);
 	glBindFramebuffer(GL_FRAMEBUFFER, fourths.framebuffer_id);
 	glViewport(0,0, fourths.width, fourths.height);
 //	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 //	glDrawBuffers(3, buffers);
 	glDrawBuffers(1, buffers);
 //	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glUseProgram(fsblurv.programid);
+//	glUseProgram(fsblurv.programid);
 	states_bindActiveTexture(0, GL_TEXTURE_2D, fulls.texture_id[0]);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
+
+	glstate_t st = {STATESENABLECULLFACE, GL_ONE, GL_ONE, GL_LESS, GL_BACK, GL_FALSE, GL_LESS, 0.0, fsquad, 0, 0, 0, 0, 0, fsblurh.programid, 0, {0}, {0}, {0}, {0}, {0}};
+	states_forceState(st);
 	glDrawBuffers(1, buffers+1);
 //	glDrawBuffers(3, buffers);
-	glUseProgram(fsblurh.programid);
+//	glUseProgram(fsblurh.programid);
 	states_bindActiveTexture(0, GL_TEXTURE_2D, fourths.texture_id[0]);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -127,7 +130,10 @@ void runpost(void){
 //	glDrawBuffers(1, buffers+1);
 	glDrawBuffers(1, buffers);
 //	glDrawBuffers(3, buffers);
-	glUseProgram(bloomout.programid);
+	glstate_t sp = {STATESENABLECULLFACE, GL_ONE, GL_ONE, GL_LESS, GL_BACK, GL_FALSE, GL_LESS, 0.0, fsquad, 0, 0, 0, 0, 0, bloomout.programid, 0, {0}, {0}, {0}, {0}, {0}};
+	states_forceState(sp);
+
+//	glUseProgram(bloomout.programid);
 	states_bindActiveTexture(0, GL_TEXTURE_2D, fulls.texture_id[0]);
 	states_bindActiveTexture(1, GL_TEXTURE_2D, fourths.texture_id[1]);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

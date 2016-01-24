@@ -139,19 +139,19 @@ int main(const int argc, const char ** argv){
 			bind_fs();
 		#endif
 
-		states_bindActiveTexture(0, GL_TEXTURE_2D, ti.texture);
 		#ifndef FRAMEBUFFER_ENABLE
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		#endif
-
+		states_depthMask(GL_TRUE);
 		glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT);
 
-		glDepthMask(GL_FALSE);
 		cube_render(&c);
-		glDepthMask(GL_TRUE);
 
-		glUseProgram(fs.programid);
-		glBindVertexArray(vaoid);
+		glstate_t s = {STATESENABLEDEPTH|STATESENABLECULLFACE, GL_ONE, GL_ONE, GL_LESS, GL_BACK, GL_TRUE, GL_LESS, 0.0, vaoid, 0, 0, 0, 0, 0, fs.programid, 0, {0}, {0}, {0, 0}, {0, 0}, {0, 0}};
+		states_forceState(s);
+		states_bindActiveTexture(0, GL_TEXTURE_2D, ti.texture);
+///		glUseProgram(fs.programid);
+//		glBindVertexArray(vaoid);
 		rickanglex += 0.5;
 		rickangley += 0.314;
 		rickanglez += 0.123;
@@ -170,10 +170,13 @@ int main(const int argc, const char ** argv){
 		depth_update();
 		depth_render(&c);
 
-		glEnable(GL_BLEND);
-		glDepthMask(GL_FALSE);
-		glUseProgram(grid_shader.programid);
-		glBindVertexArray(grid_vao);
+//		glEnable(GL_BLEND);
+//		glDepthMask(GL_FALSE);
+		glstate_t st = {STATESENABLEDEPTH|STATESENABLECULLFACE|STATESENABLEBLEND, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_LESS, GL_BACK, GL_FALSE, GL_LESS, 0.0, grid_vao, 0, 0, 0, 0, 0, grid_shader.programid, 0, {0}, {0}, {0, 0}, {0, 0}, {0, 0}};
+		states_forceState(st);
+
+//		glUseProgram(grid_shader.programid);
+//		glBindVertexArray(grid_vao);
 		Matrix4x4_ToArrayFloatGL(&c.mvp, mvp);
 		glUniformMatrix4fv(grid_shader.unimat40, 1, GL_FALSE, mvp);
 		states_bindActiveTexture(0,GL_TEXTURE_2D, ti.texture);
