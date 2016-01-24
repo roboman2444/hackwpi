@@ -22,6 +22,7 @@ GLuint depthwidth = 640;
 GLuint depthheight = 480;
 GLuint depthtexid = 0;
 GLfloat *depthdata;
+GLuint *videodata;
 GLuint numdepthverts;
 GLuint depthvao;
 
@@ -72,18 +73,24 @@ void depth_update(void){
 	pthread_mutex_lock(&depth_mutex);
 	if (depth_data_ready) {
 		int i;
-		for(i = 0; i < 640 * 480; i++) {
+		for(i = 0; i < depthwidth * depthheight; i++) {
 			depthdata[i] = ((GLfloat) rawdepthdata[i])*-0.0001 + 1.0;
 		}
 	}
 	depth_data_ready = FALSE;
 	pthread_mutex_unlock(&depth_mutex);
-/*
+
+	pthread_mutex_lock(&video_mutex);
+	if (video_data_ready) {
+		// videodata = rawvideodata;
 		int i;
-		for(i = 0; i < 640 * 480; i++) {
-			depthdata[i] = rand()/100.0;
+		for (i = 0; i < 640*480; i++) {
+			videodata[i] = rawvideodata[i];
 		}
-*/
+	}
+	video_data_ready = FALSE;
+	pthread_mutex_unlock(&video_mutex);
+
 	states_bindActiveTexture(0, GL_TEXTURE_2D, depthtexid);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, depthwidth, depthheight, 0, GL_RED, GL_FLOAT, depthdata);
 	depth_data_ready = FALSE;
@@ -93,9 +100,10 @@ void depth_init(void){
 
 	depthbackshader = shader_load("depthback");
 //	depthbackshader = shader_load("sexturedmesh");
-	createback(640, 480, 1.0, 1.0);
+	createback(depthwidth, depthheight, 1.0, 1.0);
 
 	depthdata = malloc(depthwidth * depthheight * sizeof(GLfloat));
+	videodata = (uint8_t *) malloc(640 * 480 * 3);
 	glGenTextures(1, &depthtexid);
 	states_bindActiveTexture(0, GL_TEXTURE_2D, depthtexid);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

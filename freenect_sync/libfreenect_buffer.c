@@ -7,6 +7,7 @@
 
 int init_freenect() {
 	pthread_mutex_init(&depth_mutex, NULL);
+	pthread_mutex_init(&video_mutex, NULL);
 
 	// Initialize libfreenect.
 	if (freenect_init(&fn_context, NULL) < 0) {
@@ -34,23 +35,23 @@ int init_freenect() {
 		return -1;
 	}
 	
-	printf("3\n");
-	fflush(stderr);
 	fn_alive = TRUE;
-	pthread_create(&freenect_thread, NULL, freenect_threadfunc, NULL);
 
-	printf("1\n");
-	fflush(stderr);
 	return 0;
 }
 
 
 void *freenect_threadfunc(void *arg) {
 	// int accelCount = 0;
-	freenect_set_led(fn_device, LED_BLINK_GREEN);
+	freenect_set_led(fn_device, LED_RED);
 	freenect_set_depth_callback(fn_device, update_depth_buffer);
+	freenect_set_video_callback(fn_device, update_video_buffer);
+	freenect_set_video_mode(fn_device, freenect_find_video_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_VIDEO_RGB));
 	freenect_set_depth_mode(fn_device, freenect_find_depth_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_DEPTH_11BIT));
+	freenect_set_video_buffer(fn_device, rgb_back_buffer);
+
 	freenect_start_depth(fn_device);
+	freenect_start_video(fn_device);
 	
 	while (fn_alive && freenect_process_events(fn_context) >= 0) {
 		/*//Throttle the text output
@@ -70,6 +71,7 @@ void *freenect_threadfunc(void *arg) {
 	printf("\nshutting down streams...\n");
 
 	freenect_stop_depth(fn_device);
+	freenect_stop_video(fn_device);
 
 	freenect_close_device(fn_device);
 	freenect_shutdown(fn_context);
@@ -82,4 +84,15 @@ void update_depth_buffer(freenect_device *dev, void *v_depth, uint32_t timestamp
 	rawdepthdata = (uint16_t*)v_depth;
 	depth_data_ready = TRUE;
 	pthread_mutex_unlock(&depth_mutex);
+}
+
+void update_video_buffer(freenect_device *dev, void *rgb, uint32_t timestamp) {
+	pthread_mutex_lock(&video_mutex);
+	
+	rgb_back_buffer = rawvideodata;
+	freenect_set_video_buffer(dev, rgb_back_buffer);
+	rawvideodata = (uint8_t *) rgb;
+
+	video_data_ready = TRUE;
+	pthread_mutex_unlock(&video_mutex);
 }

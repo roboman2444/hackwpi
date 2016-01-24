@@ -7,11 +7,16 @@
 #include <pthread.h>
 #include <libfreenect.h>
 
-volatile uint16_t *rawdepthdata;
-volatile int depth_data_ready;
+uint16_t *rawdepthdata;
+int depth_data_ready;
+uint8_t *rawvideodata;
+int video_data_ready;
 volatile int fn_alive;
 
+uint8_t *rgb_back_buffer;
+
 pthread_mutex_t depth_mutex;
+pthread_mutex_t video_mutex;
 pthread_t freenect_thread;
 
 freenect_context *fn_context;
@@ -28,6 +33,7 @@ void *freenect_threadfunc(void *arg);
  *  index refers to the kinect camera index
  */
 void update_depth_buffer(freenect_device *dev, void *v_depth, uint32_t timestamp);
+void update_video_buffer(freenect_device *dev, void *rgb, uint32_t timestamp);
 
 
 #endif // LIBFREENECT_BUFFERHEADER
