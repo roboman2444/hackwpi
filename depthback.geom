@@ -15,6 +15,7 @@ uniform sampler2D texture0;
 out vec3 fragh;
 out vec3 worldpos;
 out vec3 fragposition;
+out vec2 tc;
 flat out vec3 norm;
 out vec4 sspace;
 
@@ -25,12 +26,17 @@ void main(){
 	vec4 newpos;
 	float het;
 	vec4 jet;
-        jet.w = texture(texture0, vec2(mypos.x, mypos.y) / vec2 (univec20)).x;
-        jet.x = texture(texture0, vec2(mypos.x+1, mypos.y) / vec2 (univec20)).x;
-        jet.z = texture(texture0, vec2(mypos.x, mypos.y+1) / vec2 (univec20)).x;
-        jet.y = texture(texture0, vec2(mypos.x+1, mypos.y+1) / vec2 (univec20)).x;
+	vec2 tcw = vec2(mypos.x, mypos.y) / vec2 (univec20);
+	vec2 tcx = vec2(mypos.x+1, mypos.y) / vec2 (univec20);
+	vec2 tcz = vec2(mypos.x, mypos.y+1) / vec2 (univec20);
+	vec2 tcy = vec2(mypos.x+1, mypos.y+1) / vec2 (univec20);
+        jet.w = texture(texture0, tcw).x;
+        jet.x = texture(texture0, tcx).x;
+        jet.z = texture(texture0, tcz).x;
+        jet.y = texture(texture0, tcy).x;
 
         vec2 mynewpos = mypos - myoff;
+
 
         vec4 p0 =  vec4((mynewpos) * univec30.xy, jet.w * univec30.z, 1.0);
         vec4 p1 =  vec4((mynewpos + ivec2(1,0)) * univec30.xy, jet.x * univec30.z, 1.0);
@@ -48,6 +54,7 @@ void main(){
         fragh = vec3(jet.w*5.0, 1.0-jet.w*5.0, 0.0);
         sspace = unimat41 * p0;
         norm = norm1;
+	tc = tcw;
         EmitVertex(); //bottom left
 
         gl_Position = unimat40 * p1;
@@ -56,6 +63,7 @@ void main(){
         fragh = vec3(jet.x*5.0, 1.0-jet.x*5.0, 0.0);
         sspace = unimat41 * p1;
         norm = norm1;
+	tc = tcx;
         EmitVertex(); //bottom right
 
 
@@ -66,6 +74,7 @@ void main(){
         fragh = vec3(jet.z*5.0, 1.0-jet.z*5.0, 0.0);
         sspace = unimat41 * p2;
         norm = norm1;
+	tc = tcz;
         EmitVertex();// top left
 
 
@@ -75,6 +84,7 @@ void main(){
         fragh = vec3(jet.y*5.0, 1.0-jet.y*5.0, 0.0);
         sspace = unimat41 * p3;
         norm = norm2;
+	tc = tcy;
         EmitVertex(); //top right
         EndPrimitive();
 
