@@ -14,6 +14,7 @@
 #include "glhelp.h"
 
 #include "matrixlib.h"
+#include "mathlib.h"
 #include "camera.h"
 #include "depthback.h"
 #include "postprocess.h"
@@ -180,16 +181,25 @@ int main(const int argc, const char ** argv){
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
+		vec3_t small_right, small_forward;
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, GL_TRUE);
-		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT))
-			c.pos[0] -= 0.05;
-		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT))
-			c.pos[0] += 0.05;
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_UP))
- 			c.pos[1] += 0.05;
-		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_DOWN))
-			c.pos[1] -= 0.05;
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT)) {
+			vec3mult(small_right, c.v_right, -.1);
+			vec3addvec(c.pos, c.pos, small_right);
+		}
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT)) {
+			vec3mult(small_right, c.v_right, .1);
+			vec3addvec(c.pos, c.pos, small_right);
+		}
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_UP)) {
+			vec3mult(small_forward, c.v_forward, -.1);
+			vec3addvec(c.pos, c.pos, small_forward);
+		}
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_DOWN)) {
+			vec3mult(small_forward, c.v_forward, .1);
+			vec3addvec(c.pos, c.pos, small_forward);
+		}
 		c.viewchanged = TRUE;
 
 		double xpos, ypos;

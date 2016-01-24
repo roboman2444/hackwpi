@@ -44,13 +44,17 @@ void updateview(camera_t *c){
 	Matrix4x4_CreateFromQuakeEntity(&c->obj, c->pos[0], c->pos[1], c->pos[2], c->angle[0], c->angle[1], c->angle[2], 1.0);
 	Matrix4x4_Invert_Simple(&c->view, &c->obj);
 	Matrix4x4_CopyRotateOnly(&c->ronly, &c->view);
+
+	matrix4x4_t ronly_obj;
+	Matrix4x4_CopyRotateOnly(&ronly_obj, &c->obj);
+
 	//update v->forward;
 	vec3_t inf = {0.0, 0.0, 1.0};
-	Matrix4x4_Transform(&c->obj, inf, c->v_forward);
+	Matrix4x4_Transform(&ronly_obj, inf, c->v_forward);
 	vec3_t inu = {0.0, 1.0,0.0};
-	Matrix4x4_Transform(&c->obj, inu, c->v_up);
+	Matrix4x4_Transform(&ronly_obj, inu, c->v_up);
 	vec3_t inr = {1.0, 0.0, 0.0};
-	Matrix4x4_Transform(&c->obj, inr, c->v_right);
+	Matrix4x4_Transform(&ronly_obj, inr, c->v_right);
 }
 void camera_update(camera_t *c){
 	if(c->viewchanged) updateview(c);
