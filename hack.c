@@ -50,6 +50,7 @@ int main(const int argc, const char ** argv){
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	GLenum glewError = glewInit();
 	if(glewError != GLEW_OK){
@@ -122,6 +123,9 @@ int main(const int argc, const char ** argv){
 	cube_load("cubemap/room.png");
 
 
+	double lastXpos, lastYpos;
+	lastXpos = lastYpos = 0;
+
 	//render loop lol
 	while (!glfwWindowShouldClose(window)) {
 
@@ -147,8 +151,6 @@ int main(const int argc, const char ** argv){
 		rickanglez += 0.123;
 		matrix4x4_t rickmat;
 		Matrix4x4_CreateFromQuakeEntity(&rickmat, 0.0, 0.0, 0.0, rickanglex, rickangley, rickanglez, 1.0);
-
-		camera_update(&c);
 
 		matrix4x4_t outmat;
 		Matrix4x4_Concat(&outmat, &c.mvp, &rickmat);
@@ -188,6 +190,17 @@ int main(const int argc, const char ** argv){
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_DOWN))
 			c.pos[1] -= 0.05;
 		c.viewchanged = TRUE;
+
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+
+		c.angle[0] += (lastXpos - xpos) / 10;
+		c.angle[2] += (lastYpos - ypos) / 10;
+
+		lastXpos = xpos;
+		lastYpos = ypos;
+
+		camera_update(&c);
 	}
 
 	glfwTerminate();
