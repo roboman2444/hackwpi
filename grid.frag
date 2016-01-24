@@ -15,7 +15,7 @@ void main(){
 
 	vec3 viewnorm = normalize(worldpos - univec31);
 	vec3 bounce = reflect(viewnorm, crosh);
-	fragColor = textureLod(texture1, bounce, 3.5);	
+	fragColor = vec4(vec3(textureLod(texture1, bounce, 3.5)), 0.5);
 	
 //	fragColor = vec4(crosh, 1.0);
 //	fragColor = vec4(fragtc, 1, 0);

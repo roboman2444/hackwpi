@@ -59,6 +59,8 @@ int main(const int argc, const char ** argv){
 		return FALSE;
 	}
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //	glEnable(GL_CULL_FACE);
 //	glCullFace(GL_BACK);
 	//now init other shit
@@ -162,16 +164,17 @@ int main(const int argc, const char ** argv){
 	//render shit
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+		depth_update();
+		depth_render(&c);
+
 		glUseProgram(grid_shader.programid);
 		glBindVertexArray(grid_vao);
 		Matrix4x4_ToArrayFloatGL(&c.mvp, mvp);
 		glUniformMatrix4fv(grid_shader.unimat40, 1, GL_FALSE, mvp);
+		states_bindActiveTexture(0,GL_TEXTURE_2D, ti.texture);
 		states_bindActiveTexture(1, GL_TEXTURE_CUBE_MAP, cubemapid);
 		glUniform3f(grid_shader.univec31, c.pos[0], c.pos[1], c.pos[2]);
 		glDrawElements(GL_TRIANGLES, grid_numelements, GL_UNSIGNED_INT, 0);
-
-		depth_update();
-		depth_render(&c);
 
 		// fluids_simulate();
 
