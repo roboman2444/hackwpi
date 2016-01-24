@@ -78,15 +78,16 @@ void depth_update(void){
 
 void depth_get_depth(void) {
 	if (depthneedsupdate) return;
-	//if (freenect_sync_update_depth_buffer(depthdata, KINECT_INDEX) == 0){
-		int i;
+	if (freenect_sync_update_depth_buffer(depthdata, KINECT_INDEX) == 0){
+	/*	int i;
 		for(i = 0; i < 640 * 480; i++) {
 			depthdata[i] = (GLfloat)rand() /RAND_MAX;
 		}
+	*/
 		printf("%f\n", depthdata[rand()%(640 * 480)]);
 		depthneedsupdate = TRUE;
 
-	//}
+	}
 
 }
 

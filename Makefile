@@ -4,7 +4,7 @@ CC = gcc
 #LDFLAGS = -lGL -lGLEW -lglfw -lm /usr/local/lib/libfreenect.so -lpthread
  LDFLAGS = -lGL -lGLEW -lglfw -lm /usr/lib/x86_64-linux-gnu/libfreenect.so -lpthread
 CFLAGS = -Wall -Ofast -fstrict-aliasing -march=native
-OBJECTS = hack.o tex.o stb_image_precompiled.o mathlib.o shadermanager.o framebuffers.o glhelp.o camera.o matrixlib.o depthback.o postprocess.o glstates.o fluids/fluids.o
+OBJECTS = hack.o tex.o stb_image_precompiled.o mathlib.o shadermanager.o framebuffers.o glhelp.o camera.o matrixlib.o depthback.o postprocess.o glstates.o fluids/fluids.o model.o
 OBJECTS_FREENECT = libfreenect_buffer.o libfreenect_sync.o
 
 FREENECT_DIR = freenect_sync
