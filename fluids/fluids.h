@@ -5,6 +5,6 @@
 
 int fluids_init(void);
 
-void fluids_simulate(camera_t *c);
+void fluids_simulate();
 
 #endif
