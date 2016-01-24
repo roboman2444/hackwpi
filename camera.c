@@ -43,12 +43,14 @@ void updateproj(camera_t *c){
 void updateview(camera_t *c){
 	Matrix4x4_CreateFromQuakeEntity(&c->obj, c->pos[0], c->pos[1], c->pos[2], c->angle[0], c->angle[1], c->angle[2], 1.0);
 	Matrix4x4_Invert_Simple(&c->view, &c->obj);
+	Matrix4x4_CopyRotateOnly(&c->ronly, &c->view);
 }
 void camera_update(camera_t *c){
 	if(c->viewchanged) updateview(c);
 	if(c->projchanged) updateproj(c);
 	if(c->viewchanged || c->projchanged){
 		Matrix4x4_Concat(&c->mvp, &c->proj, &c->view);
+		Matrix4x4_Concat(&c->mvronlyp, &c->proj, &c->ronly);
 	}
 	c->viewchanged = FALSE;
 	c->projchanged = TRUE;

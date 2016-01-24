@@ -7,6 +7,8 @@ typedef struct camera_s {
 	matrix4x4_t obj;
 	matrix4x4_t view;
 	matrix4x4_t mvp;
+	matrix4x4_t ronly;
+	matrix4x4_t mvronlyp;
 	vec3_t v_forward;
 	vec3_t v_up;
 	vec3_t v_right;

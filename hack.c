@@ -19,6 +19,7 @@
 #include "postprocess.h"
 #include "glstates.h"
 #include "fluids/fluids.h"
+#include "cubemap.h"
 
 #include "freenect_sync/libfreenect_buffer.h"
 
@@ -115,6 +116,8 @@ int main(const int argc, const char ** argv){
 	float rickanglez = 0.0;
 	post_init(width, height);
 
+	cube_load("cubemap/");
+
 
 	//render loop lol
 	while (!glfwWindowShouldClose(window)) {
@@ -137,6 +140,7 @@ int main(const int argc, const char ** argv){
 
 		c.pos[2] = sin(rickanglex * 1.3) + 3.0;
 		camera_update(&c);
+
 		matrix4x4_t outmat;
 		Matrix4x4_Concat(&outmat, &c.mvp, &rickmat);
 		GLfloat mvp[16];
@@ -149,6 +153,7 @@ int main(const int argc, const char ** argv){
 		#ifdef RICK
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		#endif
+		cube_render(&c);
 		depth_update();
 		depth_render(&c);
 
