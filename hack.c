@@ -145,7 +145,7 @@ int main(const int argc, const char ** argv){
 //		glClearColor(1.0, 1.0, 1.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT);
 	//render shit
-		
+
 		#ifdef RICK
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		#endif
