@@ -40,6 +40,7 @@ GLuint sandvao;
 void sand_render(camera_t *c){
 	glstate_t sp = {STATESENABLECULLFACE|STATESENABLEDEPTH, GL_ONE, GL_ONE, GL_LESS, GL_BACK, GL_TRUE, GL_LESS, 0.0, sandvao, 0, 0, 0, 0, 0, sandrend.programid, 0, {0}, {0}, {0}, {0}, {0}};
 	states_forceState(sp);
+	states_bindActiveTexture(3, GL_TEXTURE_2D, depthtexid);
 	states_bindActiveTexture(2, GL_TEXTURE_2D, sandbuff.texture_id[2]);
 	states_bindActiveTexture(1, GL_TEXTURE_2D, sandbuff.texture_id[1]);
 	states_bindActiveTexture(0, GL_TEXTURE_2D, sandbuff.texture_id[0]);
@@ -55,8 +56,8 @@ void sand_phys(void){
 //vel update
 	glBindFramebuffer(GL_FRAMEBUFFER, sandbuff.framebuffer_id);
 	glViewport(0, 0, sandbuff.width, sandbuff.height);
-	if(sandping) glDrawBuffers(1, mbuffers+1);
-	else glDrawBuffers(1, mbuffers+2);
+	if(sandping) glDrawBuffers(1, mbuffers+2);
+	else glDrawBuffers(1, mbuffers+1);
 	glstate_t sp = {STATESENABLECULLFACE, GL_ONE, GL_ONE, GL_LESS, GL_BACK, GL_FALSE, GL_LESS, 0.0, fsquad, 0, 0, 0, 0, 0, sandvelup.programid, 0, {0}, {0}, {0}, {0}, {0}};
 	states_forceState(sp);
 	states_bindActiveTexture(3, GL_TEXTURE_2D, depthtexid);
@@ -70,6 +71,8 @@ void sand_phys(void){
 	glViewport(0, 0, sandbuff.width, sandbuff.height);
 	glDrawBuffers(1, mbuffers);
 	glstate_t s = {STATESENABLECULLFACE|STATESENABLEBLEND, GL_ONE, GL_ONE, GL_LESS, GL_BACK, GL_FALSE, GL_LESS, 0.0, fsquad, 0, 0, 0, 0, 0, sandposup.programid, 0, {0}, {0}, {0}, {0}, {0}};
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
 	states_forceState(s);
 	states_bindActiveTexture(2, GL_TEXTURE_2D, sandbuff.texture_id[2]);
 	states_bindActiveTexture(1, GL_TEXTURE_2D, sandbuff.texture_id[1]);
