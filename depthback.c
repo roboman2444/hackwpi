@@ -16,6 +16,7 @@
 
 #include "glstates.h"
 #include "freenect_sync/libfreenect_buffer.h"
+#include "cubemap.h"
 
 GLuint depthwidth = 640;
 GLuint depthheight = 480;
@@ -29,12 +30,14 @@ shader_t depthbackshader;
 
 void depth_render(camera_t *c){
 	states_bindActiveTexture(0, GL_TEXTURE_2D, depthtexid);
+	states_bindActiveTexture(1, GL_TEXTURE_CUBE_MAP, cubemapid);
 	glUseProgram(depthbackshader.programid);
 	glBindVertexArray(depthvao);
 	//glBindVertexArray(fsquad);
 	GLfloat mvp[16];
 	Matrix4x4_ToArrayFloatGL(&c->mvp, mvp);
 	glUniformMatrix4fv(depthbackshader.unimat40, 1, GL_FALSE, mvp);
+	glUniform3f(depthbackshader.univec31, c->pos[0], c->pos[1], c->pos[2]);
 	glUniform3f(depthbackshader.univec30, 10.0/depthwidth, 10.0/depthwidth, 1.0);
 	glUniform2i(depthbackshader.univec20, depthwidth, depthheight);
 	glDrawArrays(GL_POINTS, 0, numdepthverts);
@@ -70,14 +73,20 @@ void depth_update(void){
 	if (depth_data_ready) {
 		int i;
 		for(i = 0; i < 640 * 480; i++) {
-			depthdata[i] = ((GLfloat) rawdepthdata[i])*0.001;
-		}	
+			depthdata[i] = ((GLfloat) rawdepthdata[i])*-0.0001 + 1.0;
+		}
 	}
 	depth_data_ready = FALSE;
 	pthread_mutex_unlock(&depth_mutex);
-
+/*
+		int i;
+		for(i = 0; i < 640 * 480; i++) {
+			depthdata[i] = rand()/100.0;
+		}
+*/
 	states_bindActiveTexture(0, GL_TEXTURE_2D, depthtexid);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, depthwidth, depthheight, 0, GL_RED, GL_FLOAT, depthdata);
+	depth_data_ready = FALSE;
 }
 
 void depth_init(void){
