@@ -153,8 +153,6 @@ int main(const int argc, const char ** argv){
 		matrix4x4_t rickmat;
 		Matrix4x4_CreateFromQuakeEntity(&rickmat, 0.0, 0.0, 0.0, rickanglex, rickangley, rickanglez, 1.0);
 
-		camera_update(&c);
-
 		matrix4x4_t outmat;
 		Matrix4x4_Concat(&outmat, &c.mvp, &rickmat);
 		GLfloat mvp[16];
@@ -202,6 +200,8 @@ int main(const int argc, const char ** argv){
 
 		lastXpos = xpos;
 		lastYpos = ypos;
+
+		camera_update(&c);
 	}
 
 	glfwTerminate();
