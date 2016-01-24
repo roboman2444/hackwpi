@@ -36,7 +36,7 @@ model_t loadiqmmeshes(const struct iqmheader hdr, unsigned char * buf){
 	}
 	if(!pos) return m;
 	glGenVertexArrays(1, &m.vao);
-	glBindVertexArray(m.vao);
+	states_bindVertexArray(m.vao);
 	GLuint posb = 0;
 	GLuint normb = 0;
 	GLuint texcoordb = 0;

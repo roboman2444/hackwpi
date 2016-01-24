@@ -26,7 +26,7 @@
 
 #include "freenect_sync/libfreenect_buffer.h"
 
- #define FRAMEBUFFER_ENABLE
+// #define FRAMEBUFFER_ENABLE
 
 int main(const int argc, const char ** argv){
 	int width = 1280;
@@ -96,10 +96,10 @@ int main(const int argc, const char ** argv){
 	sand_init(128);
 	glGenVertexArrays(1, &vaoid);
 	printf("bhaca\n");
-	glBindVertexArray(vaoid);
+	states_bindVertexArray(vaoid);
 	glGenBuffers(1, &bid);
 	glGenBuffers(1, &ibid);
-	glBindBuffer(GL_ARRAY_BUFFER, bid);
+	states_bindBuffer(GL_ARRAY_BUFFER, bid);
 
 	glBufferData(GL_ARRAY_BUFFER, 20 * sizeof(GLfloat), quad, GL_STATIC_DRAW);
 
@@ -108,10 +108,10 @@ int main(const int argc, const char ** argv){
 	glEnableVertexAttribArray(TCATTRIBLOC);
 	glVertexAttribPointer(TCATTRIBLOC, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void *) (3 * sizeof(GLfloat)));
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibid);
+	states_bindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibid);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(GLuint), quadin, GL_STATIC_DRAW);
 
-		glUseProgram(fs.programid);
+	states_useProgram(fs.programid);
 
 	struct texinfo ti;
 	tex_load("test_texture.jpg", &ti);
@@ -150,7 +150,7 @@ int main(const int argc, const char ** argv){
 		cube_render(&c);
 
 		glstate_t s = {STATESENABLEDEPTH|STATESENABLECULLFACE, GL_ONE, GL_ONE, GL_LESS, GL_BACK, GL_TRUE, GL_LESS, 0.0, vaoid, 0, 0, 0, 0, 0, fs.programid, 0, {0}, {0}, {0, 0}, {0, 0}, {0, 0}};
-		states_forceState(s);
+		states_setState(s);
 		states_bindActiveTexture(0, GL_TEXTURE_2D, ti.texture);
 ///		glUseProgram(fs.programid);
 //		glBindVertexArray(vaoid);
@@ -175,7 +175,7 @@ int main(const int argc, const char ** argv){
 //		glEnable(GL_BLEND);
 //		glDepthMask(GL_FALSE);
 		glstate_t st = {STATESENABLEDEPTH|STATESENABLECULLFACE|STATESENABLEBLEND, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_LESS, GL_BACK, GL_FALSE, GL_LESS, 0.0, grid_vao, 0, 0, 0, 0, 0, grid_shader.programid, 0, {0}, {0}, {0, 0}, {0, 0}, {0, 0}};
-		states_forceState(st);
+		states_setState(st);
 
 //		glUseProgram(grid_shader.programid);
 //		glBindVertexArray(grid_vao);

@@ -179,7 +179,7 @@ shader_t shader_load_fvg(const char *fragfile, const char *vertfile, const char 
 		return s;
 	}
 
-	glUseProgram(s.programid);
+	states_useProgram(s.programid);
 	char texstring[10];
 	int i;
 	for(i =0; i < 16; i++){
