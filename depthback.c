@@ -48,8 +48,6 @@ void depth_render(camera_t *c){
 	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 int createback(const int x, const int y, const float scalex, const float scaley){
-	unsigned int fx = x-1;
-	unsigned int fy = y-1;
 	numdepthverts =  x *y ;
 	GLfloat * wavebuffer = malloc(numdepthverts * 2 * sizeof(GLfloat));
 	int ix;
@@ -78,9 +76,6 @@ void depth_update(void){
 		int i;
 		for(i = 0; i < depthwidth * depthheight; i++) {
 			depthdata[i] = ((GLfloat) rawdepthdata[i])*-0.0001 + 1.0;
-			coldata[i*3] = videodata[i*4];
-			coldata[i*3+1] = videodata[i*4+1];
-			coldata[i*3+2] = videodata[i*4+2];
 		}
 	}
 	depth_data_ready = FALSE;
@@ -100,7 +95,7 @@ void depth_update(void){
 	states_bindActiveTexture(0, GL_TEXTURE_2D, depthtexid);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, depthwidth, depthheight, 0, GL_RED, GL_FLOAT, depthdata);
 	states_bindActiveTexture(0, GL_TEXTURE_2D, coltexid);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, depthwidth, depthheight, 0, GL_RGB, GL_UNSIGNED_BYTE, coldata);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, depthwidth, depthheight, 0, GL_RGB, GL_UNSIGNED_BYTE, videodata);
 }
 
 void depth_init(void){
