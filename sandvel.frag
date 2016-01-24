@@ -13,11 +13,11 @@ void main(){
 	vec3 vel;
 	if(uniint0){
 		frag1.xyz = texture(texture2, tc).xyz;
-		frag1.xyz = vec3(0.0);
-//		frag1.y += -0.01;
+//		frag1.xyz = vec3(0.0);
+		frag1.y += -0.01;
 	} else {
 		frag2.xyz = texture(texture1, tc).xyz;
-		frag2.xyz = vec3(0.0);
-//		frag2.y += -0.01;
+//		frag2.xyz = vec3(0.0);
+		frag2.y += -0.01;
 	}
 }

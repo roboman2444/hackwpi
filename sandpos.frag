@@ -9,7 +9,7 @@ uniform bool uniint0;
 out vec4 fragColor;
 
 void main(){
-	vec3 vel = vec3(0.0);
+	vec3 vel = vec3(0.0, -0.01, 0.0);
 	if(uniint0){
 		vel = texture(texture2, tc).rgb;
 	} else {
