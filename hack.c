@@ -150,7 +150,7 @@ int main(const int argc, const char ** argv){
 		depth_update();
 		depth_render(&c);
 
-		fluids_simulate();
+//		fluids_simulate();
 
 		#ifdef FRAMEBUFFER_ENABLE
 			frame buffer runpost();

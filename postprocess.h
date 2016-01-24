@@ -7,4 +7,6 @@ void bind_fs(void);
 
 void runpost(void);
 
+GLuint fsquad;
+
 #endif

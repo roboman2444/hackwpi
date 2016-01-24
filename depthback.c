@@ -11,6 +11,8 @@
 #include "camera.h"
 #include "depthback.h"
 
+#include "postprocess.h"
+
 #include "glstates.h"
 
 #include "freenect_sync/libfreenect_buffer.h"
@@ -32,12 +34,14 @@ void depth_render(camera_t *c){
 	states_bindActiveTexture(0, GL_TEXTURE_2D, depthtexid);
 	glUseProgram(depthbackshader.programid);
 	glBindVertexArray(depthvao);
+	//glBindVertexArray(fsquad);
 	GLfloat mvp[16];
 	Matrix4x4_ToArrayFloatGL(&c->mvp, mvp);
 	glUniformMatrix4fv(depthbackshader.unimat40, 1, GL_FALSE, mvp);
 	glUniform3f(depthbackshader.univec30, 10.0/depthwidth, 10.0/depthwidth, 1.0);
 	glUniform2i(depthbackshader.univec20, depthwidth, depthheight);
 	glDrawArrays(GL_POINTS, 0, numdepthverts);
+	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 int createback(const int x, const int y, const float scalex, const float scaley){
 	unsigned int fx = x-1;
@@ -67,8 +71,9 @@ int createback(const int x, const int y, const float scalex, const float scaley)
 void depth_update(void){
 	if(!depthneedsupdate) return;
 	states_bindActiveTexture(0, GL_TEXTURE_2D, depthtexid);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, depthwidth, depthheight, 0, GL_RED, GL_FLOAT, depthdata);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, depthwidth, depthheight, 0, GL_RED, GL_FLOAT, depthdata);
 	depthneedsupdate = FALSE;
+//	printf("depthtexid is %i\n", depthtexid);
 }
 
 void depth_get_depth(void) {
@@ -78,7 +83,7 @@ void depth_get_depth(void) {
 		for(i = 0; i < 640 * 480; i++) {
 			depthdata[i] = (GLfloat)rand() /RAND_MAX;
 		}
-		// printf("%f\n", depthdata[rand()%(640 * 480)]);
+		printf("%f\n", depthdata[rand()%(640 * 480)]);
 		depthneedsupdate = TRUE;
 
 	//}
@@ -89,10 +94,17 @@ void depth_get_depth(void) {
 void depth_init(void){
 
 	depthbackshader = shader_load("depthback");
+//	depthbackshader = shader_load("sexturedmesh");
 	createback(640, 480, 1.0, 1.0);
 
 	depthneedsupdate = TRUE;
 	depthdata = malloc(depthwidth * depthheight * sizeof(GLfloat));
 	glGenTextures(1, &depthtexid);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, depthtexid);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
 	depth_update();
 }
