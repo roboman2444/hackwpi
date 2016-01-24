@@ -24,6 +24,7 @@ GLuint depthtexid = 0;
 GLuint coltexid = 0;
 GLfloat *depthdata;
 GLuint *videodata;
+GLuint *coldata;
 GLuint numdepthverts;
 GLuint depthvao;
 
@@ -77,6 +78,9 @@ void depth_update(void){
 		int i;
 		for(i = 0; i < depthwidth * depthheight; i++) {
 			depthdata[i] = ((GLfloat) rawdepthdata[i])*-0.0001 + 1.0;
+			coldata[i*3] = videodata[i*4];
+			coldata[i*3+1] = videodata[i*4+1];
+			coldata[i*3+2] = videodata[i*4+2];
 		}
 	}
 	depth_data_ready = FALSE;
@@ -95,8 +99,8 @@ void depth_update(void){
 
 	states_bindActiveTexture(0, GL_TEXTURE_2D, depthtexid);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, depthwidth, depthheight, 0, GL_RED, GL_FLOAT, depthdata);
-//	states_bindActiveTexture(0, GL_TEXTURE_2D, coltexid);
-//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, depthwidth/2, depthheight/2, 0, GL_RGB, GL_UNSIGNED_BYTE, rawcolordata);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, coltexid);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, depthwidth, depthheight, 0, GL_RGB, GL_UNSIGNED_BYTE, coldata);
 }
 
 void depth_init(void){
@@ -106,7 +110,8 @@ void depth_init(void){
 	createback(depthwidth, depthheight, 1.0, 1.0);
 
 	depthdata = malloc(depthwidth * depthheight * sizeof(GLfloat));
-	videodata = (uint8_t *) malloc(640 * 480 * 3);
+	videodata = (uint8_t *) malloc(640 * 480 * 4);
+	coldata = (uint8_t *) malloc(640 * 480 * 4);
 	glGenTextures(1, &depthtexid);
 	states_bindActiveTexture(0, GL_TEXTURE_2D, depthtexid);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
