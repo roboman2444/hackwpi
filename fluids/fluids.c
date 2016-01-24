@@ -11,7 +11,7 @@
 #include "../camera.h"
 #include "fluids.h"
 
-// #include "../glstates.h"
+#include "../glstates.h"
 
 
 
@@ -51,7 +51,7 @@ int fluids_init(void){
 	
 	//Create Vertex Array Object
 	glGenVertexArrays(1, &All_screen);
-	glBindVertexArray(All_screen);
+	states_bindVertexArray(All_screen);
 
 	GLfloat canvas[] = {		//DATA
 		-1.0f,-1.0f,
@@ -64,16 +64,16 @@ int fluids_init(void){
 
 	//VBO for fluid wall
 	glGenBuffers(1, &All_screenVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, All_screenVBO);
+	states_bindBuffer(GL_ARRAY_BUFFER, All_screenVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(canvas), &canvas, GL_STATIC_DRAW);
 	//Assign attribs
 	glVertexAttribPointer(POSATTRIBLOC, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(POSATTRIBLOC);
-	glBindVertexArray(0);	//unbind VAO
+	states_bindVertexArray(0);	//unbind VAO
 
 	// Create vaos for the inside and boundary cells
 	glGenVertexArrays(1, &inside);
-	glBindVertexArray(inside);
+	states_bindVertexArray(inside);
 
 	float px = 1.0 / fluidswidth; px = 15 * px;
 	float py = 1.0 / fluidsheight;  py = 15 * py;
@@ -91,17 +91,17 @@ int fluids_init(void){
 	
 	GLuint fluid;//VBO for fluid wall
 	glGenBuffers(1, &fluid);
-	glBindBuffer(GL_ARRAY_BUFFER, fluid);
+	states_bindBuffer(GL_ARRAY_BUFFER, fluid);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(fluidwall), &fluidwall, GL_STATIC_DRAW);	
 	//Assign attribs
 	glVertexAttribPointer(POSATTRIBLOC, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(POSATTRIBLOC);
-	glBindVertexArray(0);	//unbind VAO
+	states_bindVertexArray(0);	//unbind VAO
 
 
 	//Another VAO for boundary
 	glGenVertexArrays(1, &boundary);
-	glBindVertexArray(boundary);
+	states_bindVertexArray(boundary);
 	
 	GLfloat boundaryWall[] = {
 
@@ -137,7 +137,7 @@ int fluids_init(void){
 
 	//VBO for fluid wall
 	glGenBuffers(1, &boundaryVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, boundaryVBO);
+	states_bindBuffer(GL_ARRAY_BUFFER, boundaryVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(boundaryWall), &boundaryWall, GL_STATIC_DRAW);
 
 	//Assign attribs
@@ -145,7 +145,7 @@ int fluids_init(void){
 	glEnableVertexAttribArray(POSATTRIBLOC);
 	glVertexAttribPointer(OFFSETATTRIBLOC, 2, GL_FLOAT, GL_FALSE, 4*sizeof(GL_FLOAT), BUFFER_OFFSET(2*sizeof(GL_FLOAT)));
 	glEnableVertexAttribArray(OFFSETATTRIBLOC);
-	glBindVertexArray(0);	//unbind VAO
+	states_bindVertexArray(0);	//unbind VAO
 
 	glGenFramebuffers(1,&MainFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, MainFBO);
@@ -153,7 +153,7 @@ int fluids_init(void){
 	//now create a texture
 	GLuint renderTexture;
 	glGenTextures(1, &renderTexture);
-	glBindTexture(GL_TEXTURE_2D, renderTexture);
+	states_bindTexture(GL_TEXTURE_2D, renderTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, fluidswidth, fluidsheight, 0, GL_RGBA, GL_FLOAT, 0);
 	//filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -166,7 +166,7 @@ int fluids_init(void){
 	// The depth renderbuffer
 	GLuint depthbuffer;
 	glGenTextures(1, &depthbuffer);
-	glBindTexture(GL_TEXTURE_2D, depthbuffer);
+	states_bindTexture(GL_TEXTURE_2D, depthbuffer);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
@@ -178,7 +178,7 @@ int fluids_init(void){
 	//glReadBuffer(GL_NONE);
 
 	glGenTextures(1, &Velocity0);
-	glBindTexture(GL_TEXTURE_2D, Velocity0);
+	states_bindTexture(GL_TEXTURE_2D, Velocity0);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, fluidswidth, fluidsheight, 0, GL_RGBA, GL_FLOAT, 0);
 	//filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -189,7 +189,7 @@ int fluids_init(void){
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, Velocity0, 0);
 
 	glGenTextures(1, &Velocity1);
-	glBindTexture(GL_TEXTURE_2D, Velocity1);
+	states_bindTexture(GL_TEXTURE_2D, Velocity1);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, fluidswidth, fluidsheight, 0, GL_RGBA, GL_FLOAT, 0);
 	//filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -201,7 +201,7 @@ int fluids_init(void){
 
 
 	glGenTextures(1, &Pressure0);
-	glBindTexture(GL_TEXTURE_2D, Pressure0);
+	states_bindTexture(GL_TEXTURE_2D, Pressure0);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, fluidswidth, fluidsheight, 0, GL_RGBA, GL_FLOAT, 0);
 	//filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -212,7 +212,7 @@ int fluids_init(void){
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, Pressure0, 0);
 
 	glGenTextures(1, &Pressure1);
-	glBindTexture(GL_TEXTURE_2D, Pressure1);
+	states_bindTexture(GL_TEXTURE_2D, Pressure1);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, fluidswidth, fluidsheight, 0, GL_RGBA, GL_FLOAT, 0);
 	//filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -224,7 +224,7 @@ int fluids_init(void){
 
 
 	glGenTextures(1, &divergence);
-	glBindTexture(GL_TEXTURE_2D, divergence);
+	states_bindTexture(GL_TEXTURE_2D, divergence);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, fluidswidth, fluidsheight, 0, GL_RGBA, GL_FLOAT, 0);
 	//filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -255,13 +255,13 @@ int fluids_init(void){
 	glGenFramebuffers(1, &Jacobi_iter_FBO_1);
 	glBindFramebuffer(GL_FRAMEBUFFER, Jacobi_iter_FBO_1);
 
-	glBindTexture(GL_TEXTURE_2D, divergence);
+	states_bindTexture(GL_TEXTURE_2D, divergence);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, divergence, 0);
 
-	glBindTexture(GL_TEXTURE_2D, Pressure0);
+	states_bindTexture(GL_TEXTURE_2D, Pressure0);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, Pressure0, 0);
 
-	glBindTexture(GL_TEXTURE_2D, Pressure1);
+	states_bindTexture(GL_TEXTURE_2D, Pressure1);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, Pressure1, 0);
 
 	GLenum Jacobi_iter_1[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
@@ -277,13 +277,13 @@ int fluids_init(void){
 	glGenFramebuffers(1, &Jacobi_iter_FBO_2);
 	glBindFramebuffer(GL_FRAMEBUFFER, Jacobi_iter_FBO_2);
 
-	glBindTexture(GL_TEXTURE_2D, divergence);
+	states_bindTexture(GL_TEXTURE_2D, divergence);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, divergence, 0);
 
-	glBindTexture(GL_TEXTURE_2D, Pressure1);
+	states_bindTexture(GL_TEXTURE_2D, Pressure1);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, Pressure1, 0);
 
-	glBindTexture(GL_TEXTURE_2D, Pressure0);
+	states_bindTexture(GL_TEXTURE_2D, Pressure0);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, Pressure0, 0);
 
 	GLenum Jacobi_iter_2[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
@@ -316,72 +316,67 @@ int fluids_init(void){
 	};
 
 	glGenBuffers(1, &quad_vertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+	states_bindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);//this is default : draw to screen
 	
 	return 0;
 }
 
-void fluids_simulate(camera_t *c) {
+void fluids_simulate() {
 	// 1: Force addition
-	glUseProgram(addForce.programid);
+	states_useProgram(addForce.programid);
 
 	// TODO: Fill in addForce uniforms
 	// glUniform2f(addForce.univec20, [placeholder mouseX], [placeholder mouseY]);
 	// glUniform2f(addForce.univec21, [placeholder mouseDX], [placeholder mouseDY]);
-	glActiveTexture(0);
-	glBindTexture(GL_TEXTURE_2D, Velocity0);	//add V0 as input texture
+	states_bindActiveTexture(0, GL_TEXTURE_2D, Velocity0);	//add V0 as input texture
 	glUniform1i(addForce.texturepos[0], 0);
-	glBindVertexArray(inside);
+	states_bindVertexArray(inside);
 
 	//2nd draw call
 	glDrawArrays(GL_TRIANGLES, 0, 6);
-	glBindVertexArray(0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	states_bindVertexArray(0);
+	states_bindTexture(GL_TEXTURE_2D, 0);
 
 
 	// 2: Advection
-	glUseProgram(advectVelocity.programid);
-	glActiveTexture(0);
-	glBindTexture(GL_TEXTURE_2D, Velocity1);
+	states_useProgram(advectVelocity.programid);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, Velocity1);
 	glUniform1i(advectVelocity.texturepos[1], 0);
 
-	glActiveTexture(1);
-	glBindTexture(GL_TEXTURE_2D, Velocity1);
+	states_bindActiveTexture(1, GL_TEXTURE_2D, Velocity1);
 	glUniform1i(advectVelocity.texturepos[0], 1);
-	glBindVertexArray(inside);
+	states_bindVertexArray(inside);
 	
 	//1st draw call
 	glDrawArrays(GL_TRIANGLES,0,6);
-	glBindVertexArray(0);//unbind VAO
-	glBindTexture(GL_TEXTURE_2D, 0);
+	states_bindVertexArray(0);//unbind VAO
+	states_bindTexture(GL_TEXTURE_2D, 0);
 	//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
 	// 3: Velocity boundary
-	glBindVertexArray(boundary);
+	states_bindVertexArray(boundary);
 		
-	glUseProgram(velocityBoundary.programid);
-	glActiveTexture(0);
-	glBindTexture(GL_TEXTURE_2D, Velocity1);
+	states_useProgram(velocityBoundary.programid);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, Velocity1);
 	glUniform1i(velocityBoundary.texturepos[1],0);
-	glBindVertexArray(boundary);
+	states_bindVertexArray(boundary);
 
 	glDrawArrays(GL_TRIANGLES, 0, 24);
-	glBindVertexArray(0);//unbind VAO
-	glBindTexture(GL_TEXTURE_2D, 0);
+	states_bindVertexArray(0);//unbind VAO
+	states_bindTexture(GL_TEXTURE_2D, 0);
 
 
 	// 4: Divergence
-	glUseProgram(divergenceShader.programid);
-	glActiveTexture(0);
-	glBindTexture(GL_TEXTURE_2D, Velocity0);
+	states_useProgram(divergenceShader.programid);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, Velocity0);
 	glUniform1i(divergenceShader.texturepos[0], 0);
-	glBindVertexArray(inside);
+	states_bindVertexArray(inside);
 	//4th draw call
 	glDrawArrays(GL_TRIANGLES, 0, 6);
-	glBindVertexArray(0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	states_bindVertexArray(0);
+	states_bindTexture(GL_TEXTURE_2D, 0);
 
 
 	// 5: Pressure computation (Jacobi)
@@ -390,32 +385,29 @@ void fluids_simulate(camera_t *c) {
 	int i;
 	for (i = 0; i < 10; i++) { 
 		glBindFramebuffer(GL_FRAMEBUFFER, tempFBO);
-		glUseProgram(jacobiSolver.programid);
+		states_useProgram(jacobiSolver.programid);
 
-		glActiveTexture(0);
-		glBindTexture(GL_TEXTURE_2D, divergence);
+		states_bindActiveTexture(0, GL_TEXTURE_2D, divergence);
 		glUniform1i(jacobiSolver.texturepos[0], 0);
 
-		glActiveTexture(1);
-		glBindTexture(GL_TEXTURE_2D, tempPressure);
+		states_bindActiveTexture(1, GL_TEXTURE_2D, tempPressure);
 		glUniform1i(jacobiSolver.texturepos[1], 1);
 
-		glBindVertexArray(inside);
+		states_bindVertexArray(inside);
 
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 
 		// 6: Pressure boundary (Jacobi)
-		glUseProgram(jacobiSolverBound.programid);
-		glBindVertexArray(boundary);
+		states_useProgram(jacobiSolverBound.programid);
+		states_bindVertexArray(boundary);
 
-		glActiveTexture(0);
-		glBindTexture(GL_TEXTURE_2D, Pressure0);
+		states_bindActiveTexture(0, GL_TEXTURE_2D, Pressure0);
 		glUniform1i(jacobiSolverBound.texturepos[0], 0);
 
 		glDrawArrays(GL_TRIANGLES, 0, 24);
-		glBindVertexArray(0);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		states_bindVertexArray(0);
+		states_bindTexture(GL_TEXTURE_2D, 0);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		//swap pressure textures
@@ -433,34 +425,31 @@ void fluids_simulate(camera_t *c) {
 	// 7: Subtract pressure gradient
 	glBindFramebuffer(GL_FRAMEBUFFER, MainFBO);
 
-	glUseProgram(subtractPressure.programid);
-	glActiveTexture(0);
-	glBindTexture(GL_TEXTURE_2D, Pressure0);
+	states_useProgram(subtractPressure.programid);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, Pressure0);
 	glUniform1i(subtractPressure.texturepos[0], 0);
 
-	glActiveTexture(1);
-	glBindTexture(GL_TEXTURE_2D, Velocity0);
+	states_bindActiveTexture(1, GL_TEXTURE_2D, Velocity0);
 	glUniform1i(subtractPressure.texturepos[1], 1);
 
-	glBindVertexArray(inside);
+	states_bindVertexArray(inside);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
-	glBindVertexArray(0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	states_bindVertexArray(0);
+	states_bindTexture(GL_TEXTURE_2D, 0);
 
 
 	// 8: Copy v1 to v0
-	glUseProgram(texCopyShader.programid);
-	glActiveTexture(0);
-	glBindTexture(GL_TEXTURE_2D, Velocity1);
+	states_useProgram(texCopyShader.programid);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, Velocity1);
 	glUniform1i(texCopyShader.texturepos[1], 0);
 
 
-	glBindVertexArray(inside);
+	states_bindVertexArray(inside);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
-	glBindVertexArray(0);
+	states_bindVertexArray(0);
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+	states_bindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
@@ -471,23 +460,18 @@ void fluids_simulate(camera_t *c) {
 	// glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
 	//use our quad shader
-	glUseProgram(quadProgram.programid);
-
-	GLfloat mvp[16];
-	Matrix4x4_ToArrayFloatGL(&c->mvp, mvp);
+	states_useProgram(quadProgram.programid);
 
 	//Bind out texture in texture unit #0
-	glActiveTexture(0);
-	glBindTexture(GL_TEXTURE_2D, Velocity0);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, Velocity0);
 	glUniform1i(quadProgram.texturepos[0], 0);
 
-	//glActiveTexture(1);
-	//glBindTexture(GL_TEXTURE_2D, Pressure0);
+	//states_bindActiveTexture(1, GL_TEXTURE_2D, Pressure0);
 	//glUniform1i(quadProgram.texturepos[2], 1);
 
 	//1st attribute : quad vertices
 	glEnableVertexAttribArray(0);	//note that this corresponds to the layout=0 in shader
-	glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+	states_bindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
 	glVertexAttribPointer(
 		0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
 		3,                  // size

@@ -75,7 +75,7 @@ void depth_update(void){
 	if (depth_data_ready) {
 		int i;
 		for(i = 0; i < depthwidth * depthheight; i++) {
-			depthdata[i] = ((GLfloat) rawdepthdata[i])*-0.0001 + 1.0;
+			depthdata[i] = ((GLfloat) rawdepthdata[depthwidth * depthheight - i - 1])*-0.0001 + 1.0;
 		}
 	}
 	depth_data_ready = FALSE;
