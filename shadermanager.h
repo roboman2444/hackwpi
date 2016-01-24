@@ -12,6 +12,7 @@ typedef struct shader_s {
 	GLuint univec31;
 	GLuint univec20;
 	GLuint univec21;
+	GLuint uniint0;
 	const char * fragfile;
 	const char * vertfile;
 	const char * geomfile;

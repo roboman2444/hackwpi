@@ -22,6 +22,7 @@
 #include "fluids/fluids.h"
 #include "cubemap.h"
 #include "grid.h"
+#include "sand.h"
 
 #include "freenect_sync/libfreenect_buffer.h"
 
@@ -92,6 +93,7 @@ int main(const int argc, const char ** argv){
 	depth_init();
 	printf("bhaca\n");
 	fluids_init();
+	sand_init(128);
 	glGenVertexArrays(1, &vaoid);
 	printf("bhaca\n");
 	glBindVertexArray(vaoid);

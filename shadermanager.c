@@ -196,6 +196,7 @@ shader_t shader_load_fvg(const char *fragfile, const char *vertfile, const char 
 	s.univec31 = glGetUniformLocation(s.programid, "univec31");
 	s.univec20 = glGetUniformLocation(s.programid, "univec20");
 	s.univec21 = glGetUniformLocation(s.programid, "univec21");
+	s.uniint0 = glGetUniformLocation(s.programid, "uniint0");
 
 	if(gs) free(gs);
 	if(vs) free(vs);
