@@ -51,6 +51,7 @@ void *freenect_threadfunc(void *arg) {
 	freenect_set_depth_mode(fn_device, freenect_find_depth_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_DEPTH_MM));
 	
 	freenect_start_depth(fn_device);
+	freenect_set_tilt_degs(fn_device, 8);
 	/*
 	if (using_video) {
 		freenect_set_video_callback(fn_device, update_video_buffer);
@@ -63,21 +64,21 @@ void *freenect_threadfunc(void *arg) {
 	}*/
 
 	while (fn_alive && freenect_process_events(fn_context) >= 0) {
-		/*//Throttle the text output
-		if (accelCount++ >= 2000) {
-			accelCount = 0;
-			freenect_raw_tilt_state* state;
-			freenect_update_tilt_state(f_dev);
-			state = freenect_get_tilt_state(f_dev);
-			double dx,dy,dz;
-			freenect_get_mks_accel(state, &dx, &dy, &dz);
-			printf("\r raw acceleration: %4d %4d %4d  mks acceleration: %4f %4f %4f", state->accelerometer_x, state->accelerometer_y, state->accelerometer_z, dx, dy, dz);
-			fflush(stdout);
-		}*/
-		usleep(16000);
+		
+		usleep(200000);
+		freenect_set_led(fn_device, LED_OFF);
+		usleep(200000);
+		freenect_set_led(fn_device, LED_GREEN);
+		usleep(200000);
+		freenect_set_led(fn_device, LED_RED);
+		usleep(200000);
+		freenect_set_led(fn_device, LED_YELLOW);
+		
 	}
 
 	printf("\nshutting down streams...\n");
+
+	freenect_set_tilt_degs(fn_device, 31);
 
 	freenect_stop_depth(fn_device);
 	freenect_stop_video(fn_device);
