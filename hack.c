@@ -20,6 +20,7 @@
 #include "glstates.h"
 #include "fluids/fluids.h"
 #include "cubemap.h"
+#include "grid.h"
 
 #include "freenect_sync/libfreenect_buffer.h"
 
@@ -65,6 +66,9 @@ int main(const int argc, const char ** argv){
 	GLint maxbufattach = 0;
 	glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxbufattach);
 	printf("max attachments are %i\n", maxbufattach);
+
+	createWaveBuffer(10, 10, 2, 2);
+	init_grid_shaders();
 
 	shader_t fs = shader_load("./texturedmesh");
 	GLfloat quad[] = {-1.0, -1.0, 0.0, 0.0, 0.0,
@@ -138,7 +142,6 @@ int main(const int argc, const char ** argv){
 		matrix4x4_t rickmat;
 		Matrix4x4_CreateFromQuakeEntity(&rickmat, 0.0, 0.0, 0.0, rickanglex, rickangley, rickanglez, 1.0);
 
-		c.pos[2] = sin(rickanglex * 1.3) + 3.0;
 		camera_update(&c);
 
 		matrix4x4_t outmat;
@@ -149,18 +152,22 @@ int main(const int argc, const char ** argv){
 //		glClearColor(1.0, 1.0, 1.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT);
 	//render shit
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		
+		glUseProgram(grid_shader.programid);
+		glBindVertexArray(grid_vao);
+		Matrix4x4_ToArrayFloatGL(&c.mvp, mvp);
+		glUniformMatrix4fv(grid_shader.unimat40, 1, GL_FALSE, mvp);
+		glDrawElements(GL_TRIANGLES, grid_numelements, GL_UNSIGNED_INT, 0);
 
-		#ifdef RICK
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		#endif
 		cube_render(&c);
 		depth_update();
 		depth_render(&c);
 
-//		fluids_simulate();
+		// fluids_simulate();
 
 		#ifdef FRAMEBUFFER_ENABLE
-			frame buffer runpost();
+			runpost();
 		#endif
 	//swap em buffs
 		glfwSwapBuffers(window);
@@ -168,6 +175,15 @@ int main(const int argc, const char ** argv){
 
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, GL_TRUE);
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT))
+			c.pos[0] -= 0.05;
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT))
+			c.pos[0] += 0.05;
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_UP))
+ 			c.pos[1] += 0.05;
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_DOWN))
+			c.pos[1] -= 0.05;
+		c.viewchanged = TRUE;
 	}
 
 	glfwTerminate();
