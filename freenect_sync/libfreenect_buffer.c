@@ -5,9 +5,11 @@
 
 #include "libfreenect_buffer.h"
 
-int init_freenect() {
+int init_freenect(int use_video) {
 	pthread_mutex_init(&depth_mutex, NULL);
 	pthread_mutex_init(&video_mutex, NULL);
+
+	using_video = use_video;
 
 	// Initialize libfreenect.
 	if (freenect_init(&fn_context, NULL) < 0) {
@@ -43,16 +45,23 @@ int init_freenect() {
 
 void *freenect_threadfunc(void *arg) {
 	// int accelCount = 0;
+
 	freenect_set_led(fn_device, LED_RED);
 	freenect_set_depth_callback(fn_device, update_depth_buffer);
-	freenect_set_video_callback(fn_device, update_video_buffer);
-	freenect_set_video_mode(fn_device, freenect_find_video_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_VIDEO_RGB));
 	freenect_set_depth_mode(fn_device, freenect_find_depth_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_DEPTH_MM));
-	freenect_set_video_buffer(fn_device, rgb_back_buffer);
-
-	freenect_start_depth(fn_device);
-	freenect_start_video(fn_device);
 	
+	freenect_start_depth(fn_device);
+	/*
+	if (using_video) {
+		freenect_set_video_callback(fn_device, update_video_buffer);
+		freenect_set_video_mode(fn_device, freenect_find_video_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_VIDEO_RGB));
+		freenect_set_video_buffer(fn_device, rgb_back_buffer);
+
+		freenect_start_video(fn_device);
+	} else {
+		printf("Not collecting kinect RGB data.\n");
+	}*/
+
 	while (fn_alive && freenect_process_events(fn_context) >= 0) {
 		/*//Throttle the text output
 		if (accelCount++ >= 2000) {

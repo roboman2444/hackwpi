@@ -78,10 +78,14 @@ void depth_update(void){
 		int i;
 		for(i = 0; i < depthwidth * depthheight; i++) {
 			int depth = rawdepthdata[depthwidth * depthheight - i - 1];
-			if(!i || mxd < depth) mxd = depth;
-			if(depth ==0) depth = prevlarge;
-			depthdata[i] = 1.0 - ((GLfloat) depth)/2048.0 ;
-			if(!i || mid > depth) mid = depth;
+			if (depth > 1.0) {
+				//if(!i || mxd < depth) mxd = depth;
+				//if(depth ==0) depth = prevlarge;
+				depthdata[i] = 1.0 - ((GLfloat) depth)/2048.0 ;
+				//if(!i || mid > depth) mid = depth;
+			} else  {
+				//depthdata[i] = 0 ;	
+			}
 		}
 	}
 	prevlarge = mxd;
