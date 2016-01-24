@@ -8,10 +8,12 @@ in VS_OUT {
 uniform sampler2D texture0;
 uniform vec2 univec20;
 out vec2 tc;
+out float fg;
 void main(){
 	vec4 mypos;
 	vec4 texc;
 	mypos = gs_in[0].pos;
+	fg =mypos.z;
 	texc = vec4(-0.01 * univec20.x, -0.01 * univec20.y, 0.0, 0.0);
 	tc = vec2(-1.0, -1.0);
         gl_Position = mypos + texc;
