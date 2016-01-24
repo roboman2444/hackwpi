@@ -69,9 +69,9 @@ void createFSquad(void){
 
 
 GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
-GLenum fullsint[] = {GL_RGBA16F, GL_RGB16F, 0, 0, 0, 0, 0, 0};
-GLenum fullsfmt[] = {GL_RGBA, GL_RGB, 0, 0, 0, 0, 0, 0};
-GLenum fullstype[] = {GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE, 0, 0, 0, 0, 0, 0};
+GLenum fullsint[] = {GL_RGBA16F, GL_RGB16F, GL_RGB16F, 0, 0, 0, 0, 0};
+GLenum fullsfmt[] = {GL_RGBA, GL_RGB, GL_RGB, 0, 0, 0, 0, 0};
+GLenum fullstype[] = {GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE, 0, 0, 0, 0, 0};
 
 GLenum fourthsint[] = {GL_RGB16F, GL_RGB16F, GL_RGB16F, 0, 0, 0, 0, 0};
 GLenum fourthsfmt[] = {GL_RGB, GL_RGB, GL_RGB, 0, 0, 0, 0, 0};
