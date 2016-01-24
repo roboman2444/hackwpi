@@ -54,4 +54,6 @@ void main(){
  	
 	vel.z -= 0.2;
 	frag1.xyz = vel * vec3(0.5, 0.5, 0.5);
+	if(abs(pos.x) > 5.0) vel.x -= pos.x;
+	if(abs(pos.y) > 5.0) vel.y -= pos.y;
 }
