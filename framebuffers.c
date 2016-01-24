@@ -19,6 +19,8 @@ framebuffer_t create_framebuffer(int width, int height, GLenum texturesint[8],  
 		count++;
 		glGenTextures(1, &buffer.texture_id[i]);
 		states_bindActiveTexture(0, GL_TEXTURE_2D, buffer.texture_id[i]);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, buffer.texture_id[i]);
 		glTexImage2D(
 			GL_TEXTURE_2D,
 			0,

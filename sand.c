@@ -46,11 +46,25 @@ void sand_render(camera_t *c){
 	GLfloat mvp[16];
 	Matrix4x4_ToArrayFloatGL(&c->mvp, mvp);
 	glUniformMatrix4fv(sandrend.unimat40, 1, GL_FALSE, mvp);
+	glUniform2f(sandrend.univec20, 1.0, c->aspect);
 	glDrawArrays(GL_POINTS, 0, sandsres * sandsres);
 //	printf("readan %i %i\n", sandsres, sandbuff.texture_id[0]);
 }
 
 void sand_phys(void){
+//vel update
+	glBindFramebuffer(GL_FRAMEBUFFER, sandbuff.framebuffer_id);
+	glViewport(0, 0, sandbuff.width, sandbuff.height);
+	if(sandping) glDrawBuffers(1, mbuffers+1);
+	else glDrawBuffers(1, mbuffers+2);
+	glstate_t sp = {STATESENABLECULLFACE, GL_ONE, GL_ONE, GL_LESS, GL_BACK, GL_FALSE, GL_LESS, 0.0, fsquad, 0, 0, 0, 0, 0, sandvelup.programid, 0, {0}, {0}, {0}, {0}, {0}};
+	states_forceState(sp);
+	states_bindActiveTexture(3, GL_TEXTURE_2D, depthtexid);
+	states_bindActiveTexture(2, GL_TEXTURE_2D, sandbuff.texture_id[2]);
+	states_bindActiveTexture(1, GL_TEXTURE_2D, sandbuff.texture_id[1]);
+	states_bindActiveTexture(0, GL_TEXTURE_2D, sandbuff.texture_id[0]);
+	glUniform1i(sandvelup.uniint0, sandping);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	//do pos update
 	glBindFramebuffer(GL_FRAMEBUFFER, sandbuff.framebuffer_id);
 	glViewport(0, 0, sandbuff.width, sandbuff.height);
@@ -63,18 +77,6 @@ void sand_phys(void){
 	glUniform1i(sandposup.uniint0, sandping);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-//vel update
-	glBindFramebuffer(GL_FRAMEBUFFER, sandbuff.framebuffer_id);
-	glViewport(0, 0, sandbuff.width, sandbuff.height);
-	if(sandping) glDrawBuffers(1, mbuffers+1);
-	else glDrawBuffers(1, mbuffers+2);
-	glstate_t sp = {STATESENABLECULLFACE, GL_ONE, GL_ONE, GL_LESS, GL_BACK, GL_FALSE, GL_LESS, 0.0, fsquad, 0, 0, 0, 0, 0, sandvelup.programid, 0, {0}, {0}, {0}, {0}, {0}};
-	states_forceState(sp);
-	states_bindActiveTexture(2, GL_TEXTURE_2D, sandbuff.texture_id[2]);
-	states_bindActiveTexture(1, GL_TEXTURE_2D, sandbuff.texture_id[1]);
-	states_bindActiveTexture(0, GL_TEXTURE_2D, sandbuff.texture_id[0]);
-	glUniform1i(sandvelup.uniint0, sandping);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	sandping = !sandping;
 
 }
