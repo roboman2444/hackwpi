@@ -160,11 +160,13 @@ int main(const int argc, const char ** argv){
 //		glClearColor(1.0, 1.0, 1.0, 1.0);
 	//render shit
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		
+
 		glUseProgram(grid_shader.programid);
 		glBindVertexArray(grid_vao);
 		Matrix4x4_ToArrayFloatGL(&c.mvp, mvp);
 		glUniformMatrix4fv(grid_shader.unimat40, 1, GL_FALSE, mvp);
+		states_bindActiveTexture(1, GL_TEXTURE_CUBE_MAP, cubemapid);
+		glUniform3f(grid_shader.univec31, c.pos[0], c.pos[1], c.pos[2]);
 		glDrawElements(GL_TRIANGLES, grid_numelements, GL_UNSIGNED_INT, 0);
 
 		depth_update();
