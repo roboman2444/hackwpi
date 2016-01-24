@@ -15,17 +15,16 @@
 
 #include "matrixlib.h"
 #include "camera.h"
-
 #include "depthback.h"
-
 #include "postprocess.h"
-
 #include "glstates.h"
-
 #include "fluids/fluids.h"
 #include "grid.h"
 
+#include "freenect_sync/libfreenect_buffer.h"
+
 // #define FRAMEBUFFER_ENABLE
+#define RICK
 
 int main(const int argc, const char ** argv){
 	int width = 1280;
@@ -33,6 +32,7 @@ int main(const int argc, const char ** argv){
 	if(argc > 1) width = atoi(argv[1]);
 	if(argc > 2) height = atoi(argv[2]);
 
+	init_freenect();
 
 	GLFWwindow * window;
 	if(!glfwInit()) return -1;
@@ -157,7 +157,6 @@ int main(const int argc, const char ** argv){
 		glUniformMatrix4fv(grid_shader.unimat40, 1, GL_FALSE, mvp);
 		glDrawElements(GL_TRIANGLES, grid_numelements, GL_UNSIGNED_INT, 0);
 
-		depth_get_depth();
 		depth_update();
 		depth_render(&c);
 

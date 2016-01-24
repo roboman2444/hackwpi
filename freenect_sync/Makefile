@@ -1,9 +1,9 @@
 CC = gcc
 CFLAGS = -Wall -Ofast -fstrict-aliasing -march=native
 
-OBJECTS = libfreenect_buffer.o libfreenect_sync.o
+OBJECTS = libfreenect_buffer.o
 
 all: $(OBJECTS)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c -o ../$@ $<
+	$(CC) $(CFLAGS) -c -o ../$@ $< -lpthread -lfreenect

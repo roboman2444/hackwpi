@@ -11,7 +11,6 @@ int depthneedsupdate;
 
 void depth_render(camera_t *c);
 void depth_update(void);
-void depth_get_depth(void);
 void depth_init(void);
 
 
