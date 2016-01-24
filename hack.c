@@ -139,7 +139,6 @@ int main(const int argc, const char ** argv){
 		matrix4x4_t rickmat;
 		Matrix4x4_CreateFromQuakeEntity(&rickmat, 0.0, 0.0, 0.0, rickanglex, rickangley, rickanglez, 1.0);
 
-		c.pos[2] = sin(rickanglex * 1.3) + 3.0;
 		camera_update(&c);
 		matrix4x4_t outmat;
 		Matrix4x4_Concat(&outmat, &c.mvp, &rickmat);
@@ -171,6 +170,15 @@ int main(const int argc, const char ** argv){
 
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, GL_TRUE);
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT))
+			c.pos[0] -= 0.05;
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT))
+			c.pos[0] += 0.05;
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_UP))
+ 			c.pos[1] += 0.05;
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_DOWN))
+			c.pos[1] -= 0.05;
+		c.viewchanged = TRUE;
 	}
 
 	glfwTerminate();
