@@ -25,7 +25,7 @@
 
 #include "freenect_sync/libfreenect_buffer.h"
 
-// #define FRAMEBUFFER_ENABLE
+ #define FRAMEBUFFER_ENABLE
 
 int main(const int argc, const char ** argv){
 	int width = 1280;

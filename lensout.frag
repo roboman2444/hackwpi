@@ -14,6 +14,7 @@ void main(){
 	vec2 lensStarTexcoord = (vec3(fragtexcoord, 1.0)).xy;
 	lensmod += texture(texture3, lensStarTexcoord);
 	vec4 lensflare = texture(texture1, fragtexcoord) * lensmod;
+//	lensflare = vec4(0.5) * lensmod;
 //	fragColor = lensflare;
 	fragColor = texture(texture0, fragtexcoord) + lensflare;
 }

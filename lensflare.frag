@@ -12,6 +12,7 @@ uniform float uHaloWidth = 0.8;
 uniform vec3 uBias = vec3(-0.5);
 
 out vec4 fragColor;
+out vec4 frag1;
 out vec4 frag2;
 vec3 textureDistorted(
       in sampler2D tex,
