@@ -29,10 +29,8 @@ void cube_render(camera_t *c){
 	states_bindActiveTexture(0, GL_TEXTURE_CUBE_MAP, cubemapid);
 	glUseProgram(cubeshader.programid);
 	glBindVertexArray(cubevao);
-	matrix4x4_t ronly, mvronlyp;
-	Matrix4x4_CopyRotateOnly(&ronly, &c->view);
 	GLfloat mvp[16];
-	Matrix4x4_ToArrayFloatGL(&c->mvp, mvp);
+	Matrix4x4_ToArrayFloatGL(&c->mvronlyp, mvp);
 	glUniformMatrix4fv(cubeshader.unimat40, 1, GL_FALSE, mvp);
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 }
