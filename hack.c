@@ -34,7 +34,7 @@ int main(const int argc, const char ** argv){
 	if(argc > 1) width = atoi(argv[1]);
 	if(argc > 2) height = atoi(argv[2]);
 
-	init_freenect();
+	init_freenect(FALSE);
 
 	GLFWwindow * window;
 	if(!glfwInit()) return -1;

@@ -22,8 +22,9 @@ pthread_t freenect_thread;
 freenect_context *fn_context;
 freenect_device *fn_device;
 int fn_devices;
+int using_video;
 
-int init_freenect();
+int init_freenect(int use_video);
 
 void *freenect_threadfunc(void *arg);
 /**
