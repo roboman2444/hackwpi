@@ -134,6 +134,13 @@ int main(const int argc, const char ** argv){
 		#ifndef FRAMEBUFFER_ENABLE
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		#endif
+
+		glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT);
+
+		glDepthMask(GL_FALSE);
+		cube_render(&c);
+		glDepthMask(GL_TRUE);
+
 		glUseProgram(fs.programid);
 		glBindVertexArray(vaoid);
 		rickanglex += 0.5;
@@ -150,7 +157,6 @@ int main(const int argc, const char ** argv){
 		Matrix4x4_ToArrayFloatGL(&outmat, mvp);
 		glUniformMatrix4fv(fs.unimat40, 1, GL_FALSE, mvp);
 //		glClearColor(1.0, 1.0, 1.0, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT);
 	//render shit
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		
@@ -160,7 +166,6 @@ int main(const int argc, const char ** argv){
 		glUniformMatrix4fv(grid_shader.unimat40, 1, GL_FALSE, mvp);
 		glDrawElements(GL_TRIANGLES, grid_numelements, GL_UNSIGNED_INT, 0);
 
-		cube_render(&c);
 		depth_update();
 		depth_render(&c);
 
