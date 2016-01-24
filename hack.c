@@ -120,7 +120,7 @@ int main(const int argc, const char ** argv){
 	float rickanglez = 0.0;
 	post_init(width, height);
 
-	cube_load("cubemap/");
+	cube_load("cubemap/room.png");
 
 
 	//render loop lol

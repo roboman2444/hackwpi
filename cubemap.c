@@ -27,6 +27,7 @@ shader_t cubeshader;
 
 void cube_render(camera_t *c){
 	states_bindActiveTexture(0, GL_TEXTURE_CUBE_MAP, cubemapid);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapid);
 	glUseProgram(cubeshader.programid);
 	glBindVertexArray(cubevao);
 	GLfloat mvp[16];
@@ -99,28 +100,47 @@ void cube_load(const char * filename){
 	int width = 0, height = 0;
 	img = stbi_load(px, &width, &height, &bpp, 0);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img);
+	printf("%s %i %i\n", px, width, height);
 	stbi_image_free(img);
 	img = stbi_load(nx, &width, &height, &bpp, 0);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img);
+	printf("%s %i %i\n", nx, width, height);
 	stbi_image_free(img);
 	img = stbi_load(py, &width, &height, &bpp, 0);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img);
+	printf("%s %i %i\n", py, width, height);
 	stbi_image_free(img);
 	img = stbi_load(ny, &width, &height, &bpp, 0);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img);
+	printf("%s %i %i\n", ny, width, height);
 	stbi_image_free(img);
 	img = stbi_load(pz, &width, &height, &bpp, 0);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img);
+	printf("%s %i %i\n", pz, width, height);
 	stbi_image_free(img);
 	img = stbi_load(nz, &width, &height, &bpp, 0);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img);
+	printf("%s %i %i\n", nz, width, height);
 	stbi_image_free(img);
 
-
+	int level;
+	for(level = 0; level < 255; level++){
+		if(1<< level > width && 1 << level > height) break;
+	}
+	printf("level is %i\n", level);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, level);
+	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
+	free(px);
+	free(nx);
+	free(py);
+	free(ny);
+	free(pz);
+	free(nz);
 
 }
