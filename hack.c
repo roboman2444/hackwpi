@@ -183,7 +183,7 @@ int main(const int argc, const char ** argv){
 		glDepthMask(GL_TRUE);
 		glDisable(GL_BLEND);
 
-		fluids_simulate();
+//		fluids_simulate();
 
 		#ifdef FRAMEBUFFER_ENABLE
 			runpost();
