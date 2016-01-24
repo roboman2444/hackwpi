@@ -4,7 +4,7 @@ in vec3 Color;
 in vec2 pos;
 uniform vec2 univec20; // Mouse Position
 
-layout(location=0) out vec4 outColor;
+/*layout(location=0)*/out vec4 outColor;
 void main()
 {
 	vec2 temp = univec20;
@@ -15,5 +15,5 @@ void main()
 	if(d < 100){outColor = vec4(0,0,0,1.0);}
 	else{outColor = vec4(1,1,1,1);}
 	
-	
+	outColor = vec4(vec3(0.7), 1.0);	
 }

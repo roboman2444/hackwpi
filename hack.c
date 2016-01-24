@@ -25,6 +25,7 @@
 #include "fluids/fluids.h"
 
 // #define FRAMEBUFFER_ENABLE
+#define RICK
 
 int main(const int argc, const char ** argv){
 	int width = 1280;
@@ -145,12 +146,15 @@ int main(const int argc, const char ** argv){
 //		glClearColor(1.0, 1.0, 1.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT);
 	//render shit
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		
+		#ifdef RICK
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		#endif
 		depth_get_depth();
 		depth_update();
 		depth_render(&c);
 
-		fluids_simulate();
+		fluids_simulate(&c);
 
 		#ifdef FRAMEBUFFER_ENABLE
 			frame buffer runpost();
